@@ -1,0 +1,16 @@
+# Copy this file to application-local.yml (gitignored) and fill in real values.
+# Run Spring Boot with --spring.profiles.active=local to use it.
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/chess_openings
+    username: chess
+    password: chess
+  jpa:
+    show-sql: true
+
+gemini:
+  api-key: YOUR_GEMINI_API_KEY_HERE
+
+jwt:
+  secret: YOUR_JWT_SECRET_HERE_min32chars
+  expiration-ms: 86400000   # 24 hours
