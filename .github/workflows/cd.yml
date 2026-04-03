@@ -51,4 +51,4 @@ jobs:
           image: ${{ env.IMAGE }}:${{ github.sha }}
           flags: >-
             --allow-unauthenticated
-            --set-secrets=DB_URL=neon-db-url:latest,GEMINI_API_KEY=gemini-api-key:latest,JWT_SECRET=jwt-secret:latest
+            --set-secrets=DB_URL=NEON_DB_URL:latest,GEMINI_API_KEY=GEMINI_API_KEY:latest,JWT_SECRET=JWT_SECRET:latest
