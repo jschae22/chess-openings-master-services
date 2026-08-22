@@ -21,7 +21,7 @@ public class OpeningController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Opening> getById(@PathVariable Long id) {
+    public ResponseEntity<Opening> getById(@PathVariable long id) {
         return repository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
