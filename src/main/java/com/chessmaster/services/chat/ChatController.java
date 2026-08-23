@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/chat")
 public class ChatController {
 
-    private final GeminiService geminiService;
+    private final ClaudeService claudeService;
     private final RateLimiterService rateLimiterService;
 
-    public ChatController(GeminiService geminiService, RateLimiterService rateLimiterService) {
-        this.geminiService = geminiService;
+    public ChatController(ClaudeService claudeService, RateLimiterService rateLimiterService) {
+        this.claudeService = claudeService;
         this.rateLimiterService = rateLimiterService;
     }
 
@@ -29,9 +29,9 @@ public class ChatController {
         }
 
         try {
-            String reply = geminiService.chat(request);
+            String reply = claudeService.chat(request);
             return ResponseEntity.ok(new ChatResponse(reply));
-        } catch (GeminiException e) {
+        } catch (ChatException e) {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                     .body("AI coach is unavailable. Please try again later.");
         }

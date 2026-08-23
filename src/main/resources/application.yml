@@ -14,8 +14,9 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
-gemini:
-  api-key: ${GEMINI_API_KEY}
+claude:
+  api-key: ${CLAUDE_API_KEY}
+  model: ${CLAUDE_MODEL:claude-haiku-4-5}
 
 server:
   port: 8080
