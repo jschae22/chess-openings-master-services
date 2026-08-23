@@ -8,8 +8,9 @@ spring:
   jpa:
     show-sql: true
 
-gemini:
-  api-key: YOUR_GEMINI_API_KEY_HERE
+claude:
+  api-key: YOUR_ANTHROPIC_API_KEY_HERE
+  model: claude-haiku-4-5
 
 jwt:
   secret: YOUR_JWT_SECRET_HERE_min32chars
