@@ -1,0 +1,59 @@
+opening: Caro-Kann Defense
+slug: caro-kann-defense
+main_line: [e4, c6, d4, d5]
+
+overview: >
+  Renowned as one of the most solid replies to 1.e4. Like the French, Black
+  challenges e4 with ...d5, but prepares it with ...c6 instead of ...e6 —
+  keeping the light-squared bishop free to develop outside the pawn chain
+  before the structure locks in, avoiding the French's classic structural
+  problem.
+
+why_main_line_moves_are_played: >
+  1...c6 prepares ...d5 without blocking the c8-bishop's diagonal, and
+  supports d5 with a pawn rather than needing piece support. 2...d5 strikes
+  the center immediately, forcing the same structural decision (advance,
+  exchange, or defend) that the French faces.
+
+variations:
+  - name: Advance Variation
+    identifying_moves: [e4, c6, d4, d5, e5]
+    idea: >
+      White gains space, similar in spirit to the French Advance, but
+      Black's light-squared bishop is already free to develop to f5 before
+      the structure locks in — the entire point of choosing the Caro-Kann
+      move order over the French.
+
+  - name: Exchange Variation
+    identifying_moves: [e4, c6, d4, d5, exd5, cxd5]
+    idea: >
+      A symmetrical-looking structure where Black's bishop is already
+      better placed than in equivalent French/Queen's Gambit structures;
+      White sometimes tries a minority attack or Bd3/Ne2-f4 plans against
+      the isolated-looking d5 pawn.
+    sub_variations:
+      - name: Panov-Botvinnik Attack
+        identifying_moves: [e4, c6, d4, d5, exd5, cxd5, c4]
+        idea: >
+          White trades the Caro-Kann's characteristic solidity for dynamic,
+          active piece play by accepting an isolated queen pawn structure,
+          similar to structures from the Queen's Gambit Accepted or
+          Semi-Tarrasch.
+
+  - name: Classical Variation
+    identifying_moves: [e4, c6, d4, d5, Nc3, dxe4, Nxe4, Bf5]
+    idea: >
+      Gets the light-squared bishop out to f5 immediately after the
+      knight recapture on e4, before playing ...e6 — the Caro-Kann's
+      signature structural idea in its most direct form.
+    traps: >
+      After 5.Ng3 attacking the bishop, retreating incorrectly (rather than
+      the standard 5...Bg6) gives White an easy development lead for free.
+
+  - name: Fantasy Variation
+    identifying_moves: [e4, c6, d4, d5, f3]
+    idea: >
+      An aggressive attempt to support e4 with f3 and build a bigger
+      center than the main lines allow, at the cost of a slower, less
+      natural development scheme — sharper and riskier than the Caro-Kann's
+      usual reputation for solidity.

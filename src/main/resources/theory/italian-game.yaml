@@ -1,0 +1,62 @@
+opening: Italian Game
+slug: italian-game
+main_line: [e4, e5, Nf3, Nc6, Bc4]
+
+overview: >
+  One of the oldest, most classical openings, prized for teaching
+  fundamental principles: rapid development, central control, and early
+  piece activity aimed at f7, the weakest point in Black's camp (defended
+  only by the king at the start of the game).
+
+why_main_line_moves_are_played: >
+  3.Bc4 aims the bishop directly at f7 — more immediately aggressive than
+  the Ruy Lopez's 3.Bb5, which pressures the c6-knight/e5-pawn complex
+  instead.
+
+variations:
+  - name: Giuoco Piano
+    identifying_moves: [e4, e5, Nf3, Nc6, Bc4, Bc5]
+    idea: >
+      Symmetrical classical development ("quiet game"), with both sides
+      contesting the center and the f7/f2 squares directly.
+    sub_variations:
+      - name: Evans Gambit
+        identifying_moves: [e4, e5, Nf3, Nc6, Bc4, Bc5, b4]
+        idea: >
+          White sacrifices the b-pawn for extra tempo to build a quick
+          classical center (c3/d4) and an early attack, rather than
+          developing at normal speed.
+        traps: >
+          Black trying to hold the extra pawn too greedily instead of
+          returning it for safety/development often falls further behind
+          in the resulting attack.
+      - name: Giuoco Pianissimo
+        identifying_moves: [e4, e5, Nf3, Nc6, Bc4, Bc5, c3, Nf6, d3]
+        idea: >
+          A modern, quiet treatment that avoids early tactics and builds up
+          slowly instead — still very popular at the top level, including
+          in Magnus Carlsen's practice, as a low-theory way to reach a
+          playable middlegame.
+
+  - name: Two Knights Defense
+    identifying_moves: [e4, e5, Nf3, Nc6, Bc4, Nf6]
+    idea: >
+      Provokes sharp tactical complications rather than mirroring White's
+      development, inviting 4.Ng5 and the resulting forcing lines instead
+      of avoiding them.
+    sub_variations:
+      - name: Fried Liver Attack
+        identifying_moves: [e4, e5, Nf3, Nc6, Bc4, Nf6, Ng5, d5, exd5, Nxd5, Nxf7]
+        idea: >
+          White sacrifices a knight to rip open Black's king after the
+          natural-looking but mistaken recapture on d5 — one of the most
+          famous tactical patterns in chess instruction.
+        traps: >
+          Black should play 5...Na5 or 5...Nd4 instead of recapturing on
+          d5 with the knight, or avoid the whole line with 4...Bc5.
+      - name: Traxler Counterattack
+        identifying_moves: [e4, e5, Nf3, Nc6, Bc4, Nf6, Ng5, Bc5]
+        idea: >
+          Instead of defending passively against Ng5, Black counterattacks
+          immediately, offering material for a ferocious initiative against
+          White's own king rather than waiting for the Fried Liver ideas.
