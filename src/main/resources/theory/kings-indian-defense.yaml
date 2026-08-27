@@ -1,0 +1,58 @@
+opening: King's Indian Defense
+slug: kings-indian-defense
+main_line: [d4, Nf6, c4, g6, Nc3, Bg7, e4, d6]
+
+overview: >
+  The flagship hypermodern defense: instead of contesting the center with
+  pawns immediately, Black lets White build a big classical pawn center and
+  attacks it later with pieces and well-timed pawn breaks. Leads to some of
+  the sharpest, most imbalanced middlegames in chess, often featuring
+  opposite-wing pawn races even without opposite-side castling.
+
+why_main_line_moves_are_played: >
+  ...Nf6, ...g6, ...Bg7 fianchetto the bishop and prepare fast kingside
+  castling before any central pawn commitment. ...d6 (after White claims
+  the full classical center with e4) prepares ...e5 or a Benoni-like ...c5
+  break, deliberately allowing White a big center as a long-term target.
+
+variations:
+  - name: Classical Variation
+    identifying_moves: [d4, Nf6, c4, g6, Nc3, Bg7, e4, d6, Nf3, O-O, Be2, e5, O-O]
+    idea: >
+      Standard development for both sides, setting up the classic ...f5
+      kingside pawn storm once White eventually closes the center with d5.
+    plans_white: >
+      Close the center with d5 after ...e5, then look for queenside
+      expansion and piece pressure (c5, b4, Rb1) to race Black's kingside
+      attack.
+    plans_black: >
+      Reroute a knight (...Nd7 or ...Ne8) to free the f-pawn, then push
+      ...f5-f4 to open lines toward White's king, often supported by
+      ...g5 and heavy piece lifts (...Rf6-h6, ...Qe8-h5).
+    sub_variations:
+      - name: Bayonet Attack
+        identifying_moves: [d4, Nf6, c4, g6, Nc3, Bg7, e4, d6, Nf3, O-O, Be2, e5, O-O, Nc6, d5, Ne7, b4]
+        idea: >
+          White expands on the queenside immediately with b4 (the
+          "bayonet") to gain space and tempo before Black's kingside
+          attack gets going, rather than waiting passively.
+
+  - name: Sämisch Variation
+    identifying_moves: [d4, Nf6, c4, g6, Nc3, Bg7, e4, d6, f3]
+    idea: >
+      Supports e4 with f3 and prepares Be3/Qd2/O-O-O for a big central and
+      kingside clamp, at some cost to the speed of White's own development.
+
+  - name: Four Pawns Attack
+    identifying_moves: [d4, Nf6, c4, g6, Nc3, Bg7, e4, d6, f4]
+    idea: >
+      The most ambitious central try — pawns on c4, d4, e4, and f4 — aiming
+      for overwhelming space, but prone to overextension if Black strikes
+      back accurately with ...c5 or ...e5.
+
+  - name: Fianchetto Variation
+    identifying_moves: [d4, Nf6, c4, g6, Nc3, Bg7, g3]
+    idea: >
+      White fianchettoes too, avoiding the sharp e4-based main lines for a
+      slower, more positional battle centered on the long diagonal rather
+      than a pawn-storm race.

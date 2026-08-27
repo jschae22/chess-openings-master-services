@@ -1,0 +1,133 @@
+opening: Sicilian Defense
+slug: sicilian-defense
+main_line: [e4, c5]
+
+overview: >
+  The most popular and statistically best-scoring reply to 1.e4 at every
+  level of chess, and the most variation-rich opening in the game. Rather
+  than meeting White's central pawn symmetrically, Black plays on the
+  c-file/queenside and accepts an asymmetrical structure in exchange for
+  real winning chances with both colors.
+
+why_main_line_moves_are_played: >
+  1...c5 avoids the well-mapped symmetrical structures of 1...e5 and stakes
+  a claim on d4 from the side. Most named variations branch out of the Open
+  Sicilian (2.Nf3 followed by 3.d4 cxd4 4.Nxd4), where White gets a
+  half-open d-file and a centralized knight, while Black gets a half-open
+  c-file and, in many lines, an extra central pawn usable for a later
+  ...d5 break.
+
+variations:
+  - name: Najdorf Variation
+    identifying_moves: [e4, c5, Nf3, d6, d4, cxd4, Nxd4, Nf6, Nc3, a6]
+    idea: >
+      6...a6 is flexible rather than committal: it prevents Bb5+ and Nb5
+      ideas against Black's queenside/d6 square, and keeps options open for
+      a later ...e5 or ...e6 and queenside expansion with ...b5. Widely
+      regarded as one of Black's most reliable and combative replies to
+      1.e4 — Kasparov's main weapon for most of his career.
+    sub_variations:
+      - name: English Attack
+        identifying_moves: [e4, c5, Nf3, d6, d4, cxd4, Nxd4, Nf6, Nc3, a6, Be3]
+        idea: >
+          White prepares queenside castling and a kingside pawn storm
+          (f3, Qd2, O-O-O, g4) to race Black's queenside counterplay
+          (...b5-b4, ...a5-a4) in an opposite-side-castling battle.
+        traps: >
+          Both sides castling on opposite wings means a slow or purely
+          material-based approach loses the race; concrete calculation of
+          who breaks through first matters more than "normal" development.
+      - name: Poisoned Pawn Variation
+        identifying_moves: [e4, c5, Nf3, d6, d4, cxd4, Nxd4, Nf6, Nc3, a6, Bg5, e6, f4, Qb6]
+        idea: >
+          Black grabs the b2 pawn with the queen, accepting enormous risk
+          and complications for material. One of the most heavily analyzed,
+          objectively double-edged lines in all of chess opening theory.
+
+  - name: Dragon Variation
+    identifying_moves: [e4, c5, Nf3, d6, d4, cxd4, Nxd4, Nf6, Nc3, g6]
+    idea: >
+      Black fianchettoes onto g7 to pressure the long a1-h8 diagonal instead
+      of playing directly in the center, trading central presence for
+      long-term piece activity.
+    sub_variations:
+      - name: Yugoslav Attack
+        identifying_moves: [e4, c5, Nf3, d6, d4, cxd4, Nxd4, Nf6, Nc3, g6, Be3, Bg7, f3, O-O, Qd2, Nc6, O-O-O]
+        idea: >
+          The Dragon's sharpest and most theoretical battleground: White
+          storms the kingside with h4-h5, Black counters on the queenside
+          with ...Nxd4/...a5-a4/...b5. So heavily analyzed by engines that
+          many long forcing sequences are considered close to a draw with
+          best play, but a single inaccuracy by either side is often fatal.
+
+  - name: Classical Variation
+    identifying_moves: [e4, c5, Nf3, Nc6, d4, cxd4, Nxd4, Nf6, Nc3, d6]
+    idea: >
+      Develops the knight to c6 before committing to ...d6, a solid,
+      flexible move order without the sharpest theoretical demands of the
+      Najdorf or Dragon.
+
+  - name: Scheveningen Variation
+    identifying_moves: [e4, c5, Nf3, d6, d4, cxd4, Nxd4, Nf6, Nc3, e6]
+    idea: >
+      The small pawn duo on d6/e6 gives a solid, flexible "hedgehog-like"
+      structure adaptable to English Attack or Keres Attack (g4) setups
+      from White.
+
+  - name: Kan Variation (Paulsen)
+    identifying_moves: [e4, c5, Nf3, e6, d4, cxd4, Nxd4, a6]
+    idea: >
+      Delays committing the b8-knight or the d-pawn, preparing ...Qc7 and
+      ...b5 with maximum flexibility about where the pieces belong.
+
+  - name: Taimanov Variation
+    identifying_moves: [e4, c5, Nf3, e6, d4, cxd4, Nxd4, Nc6]
+    idea: >
+      Similar flexible spirit to the Kan, but develops the knight to c6
+      before deciding on the exact pawn structure.
+
+  - name: Sveshnikov Variation
+    identifying_moves: [e4, c5, Nf3, Nc6, d4, cxd4, Nxd4, Nf6, Nc3, e5]
+    idea: >
+      Black voluntarily weakens the d5 square and accepts a backward d6
+      pawn in exchange for active, fast piece play and a lead in
+      development — a structural concession that top-level practice has
+      shown to be well worth the dynamic compensation.
+
+  - name: Accelerated Dragon
+    identifying_moves: [e4, c5, Nf3, Nc6, d4, cxd4, Nxd4, g6]
+    idea: >
+      Reaches a Dragon-like fianchetto setup without first committing
+      ...d6, keeping the option of striking with ...d5 in one move. White's
+      typical answer is the Maroczy Bind (c4), which prevents ...d5 outright
+      and clamps down on Black's central breaks.
+
+  - name: Alapin Variation
+    identifying_moves: [e4, c5, c3]
+    idea: >
+      An Anti-Sicilian: White avoids Open Sicilian theory entirely and
+      builds a classical center with d4, aiming for an isolated- or
+      hanging-pawn structure with a small, low-theory development edge.
+
+  - name: Closed Sicilian
+    identifying_moves: [e4, c5, Nc3]
+    idea: >
+      Another Anti-Sicilian: White sidesteps Open Sicilian theory for a
+      slower strategic game, typically with g3/Bg2 and f4 kingside
+      expansion, prioritizing a quieter game over the Open Sicilian's
+      dynamism.
+
+  - name: Rossolimo Variation
+    identifying_moves: [e4, c5, Nf3, Nc6, Bb5]
+    idea: >
+      Pins/pressures the c6-knight immediately rather than entering the
+      Open Sicilian, often aiming to trade the bishop for the knight and
+      inflict doubled pawns — much less theory than the Open Sicilian,
+      similar in spirit to the Ruy Lopez Exchange Variation.
+
+  - name: Moscow Variation
+    identifying_moves: [e4, c5, Nf3, d6, Bb5+]
+    idea: >
+      The same Bb5 idea as the Rossolimo, played against Black's ...d6 move
+      order instead of ...Nc6, again avoiding Open Sicilian main lines with
+      a quick, low-theory check.

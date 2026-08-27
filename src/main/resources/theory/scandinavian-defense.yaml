@@ -1,0 +1,45 @@
+opening: Scandinavian Defense
+slug: scandinavian-defense
+main_line: [e4, d5]
+
+overview: >
+  One of the oldest recorded chess openings, analyzed as early as the
+  1470s. Challenges White's center on move one, with a reputation as a
+  slightly passive but very solid, low-theory choice for players who want
+  to fight for the center immediately without heavy Sicilian/French-style
+  memorization.
+
+why_main_line_moves_are_played: >
+  1...d5 directly challenges e4. After 2.exd5, Black must recapture, and
+  how to do so is the opening's central question: with the queen (accepting
+  a tempo loss when White develops with Nc3) or by delaying recapture with
+  2...Nf6, regaining the pawn with the knight instead.
+
+variations:
+  - name: Main Line with 3...Qa5
+    identifying_moves: [e4, d5, exd5, Qxd5, Nc3, Qa5]
+    idea: >
+      After being kicked by Nc3, the queen retreats to a5, keeping pin
+      ideas against c3 alive and staying active while Black completes
+      development with ...Nf6, ...c6, ...Bf5/...Bg4, and ...e6.
+
+  - name: Main Line with 3...Qd6
+    identifying_moves: [e4, d5, exd5, Qxd5, Nc3, Qd6]
+    idea: >
+      A more modern alternative to ...Qa5 that keeps the queen more
+      centrally flexible and avoids some of the tactical tricks aimed at
+      a5; has become a common top-level choice in recent years.
+
+  - name: Modern Variation
+    identifying_moves: [e4, d5, exd5, Nf6]
+    idea: >
+      Delays the queen recapture entirely, planning to regain the pawn with
+      the knight and avoid the tempo-loss theme of the classical treatment
+      altogether, at the cost of some structural commitments.
+    sub_variations:
+      - name: Icelandic Gambit
+        identifying_moves: [e4, d5, exd5, Nf6, c4, e6]
+        idea: >
+          Black doesn't rush to regain the d5 pawn, instead sacrificing it
+          for rapid development and open lines — a sharper try within the
+          Modern move order rather than the safe recapture.

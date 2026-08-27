@@ -1,0 +1,93 @@
+opening: Ruy Lopez
+slug: ruy-lopez
+main_line: [e4, e5, Nf3, Nc6, Bb5]
+
+overview: >
+  One of the oldest recorded openings, analyzed as early as the 16th century.
+  White's bishop on b5 does not win the e5 pawn outright, but it pressures
+  the knight defending it and prepares long-term central/kingside play. It
+  remains a main-line choice at every level, from club play to World
+  Championship matches, because small positional edges accumulate over a
+  long middlegame rather than being decided by early tactics.
+
+why_main_line_moves_are_played: >
+  2.Nf3 develops with tempo by attacking e5. 2...Nc6 is the natural defense.
+  3.Bb5 does not capture on c6 (3.Bxc6 dxc6 4.Nxe5?? Qd4! regains the pawn
+  for Black with a fork on e5/e4), but pins the knight against the king in
+  spirit and prepares Black's queenside/central play to be met with
+  pressure down the a4-e8 diagonal after ...a6, Ba4, and eventually Bb3.
+
+variations:
+  - name: Berlin Defense
+    identifying_moves: [e4, e5, Nf3, Nc6, Bb5, Nf6]
+    idea: >
+      Sidesteps the heaviest Closed Ruy Lopez theory. Black meets the pin
+      with development rather than ...a6, and is willing to head into a
+      structurally sound endgame instead of a long middlegame battle.
+    key_ideas: >
+      Became a top-level battleground after Kramnik used it to neutralize
+      Kasparov's attacking chances in their 2000 World Championship match,
+      earning the resulting structure the nickname "the Berlin Wall."
+    sub_variations:
+      - name: Berlin Endgame
+        identifying_moves: [e4, e5, Nf3, Nc6, Bb5, Nf6, O-O, Nxe4, d4, Nd6, Bxc6, dxc6, dxe5, Nf5, Qxd8+, Kxd8]
+        idea: >
+          White trades into an endgame a tempo up with a healthier pawn
+          structure; Black relies on the bishop pair and Black's own sound
+          structure (despite the early queen trade) to hold the balance.
+          Neither side is attacking the king — this is a pure structural
+          argument played out over many moves.
+
+  - name: Morphy Defense (Closed Ruy Lopez)
+    identifying_moves: [e4, e5, Nf3, Nc6, Bb5, a6, Ba4, Nf6, O-O, Be7, Re1, b5, Bb3, d6, c3, O-O, h3]
+    idea: >
+      The classical main line. 3...a6 forces White to decide between Ba4
+      (maintaining the pin/diagonal) and Bxc6 (cashing in immediately);
+      Black then completes development and prepares central or queenside
+      counterplay while White builds slowly with c3/d4.
+    plans_white: >
+      Reroute pieces for a central buildup (commonly Nb1-d2-f1-g3, or Re1,
+      c3, d4) and use the extra space for a long-term kingside or central
+      initiative.
+    plans_black: >
+      Complete development safely, then fight back with ...Bb7/...Nb8-d7-c5
+      queenside play or the thematic central break ...d5 at the right
+      moment.
+    traps: >
+      Noah's Ark Trap: if White plays an early, under-prepared d4 while
+      Black's queenside pawns are already advanced (...a6/...b5), the
+      b3-bishop can end up permanently boxed in and lost to ...c5-c4 and
+      ...b5-b4 pawn advances — a classic beginner's-lesson tactical motif.
+    sub_variations:
+      - name: Marshall Attack
+        identifying_moves: [e4, e5, Nf3, Nc6, Bb5, a6, Ba4, Nf6, O-O, Be7, Re1, b5, Bb3, O-O, c3, d5]
+        idea: >
+          Black sacrifices a pawn for fast development and a lasting
+          kingside initiative, rather than following the slow classical
+          buildup. So well-respected that many White players specifically
+          sidestep it with 8.a4 or 8.h3 Anti-Marshall systems instead of
+          allowing 8.c3.
+
+  - name: Exchange Variation
+    identifying_moves: [e4, e5, Nf3, Nc6, Bb5, a6, Bxc6]
+    idea: >
+      White cashes in the bishop for the knight immediately, inflicting
+      doubled c-pawns on Black in exchange for giving up the bishop pair.
+      Famously used by Fischer, even against weaker opposition, to grind a
+      small, low-risk structural edge for the rest of the game rather than
+      play for a middlegame attack.
+    plans_white: >
+      Trade pieces toward an endgame where Black's doubled pawns become a
+      long-term target; avoid complications in favor of the structural
+      advantage.
+    plans_black: >
+      Use the bishop pair and open lines for active piece play to
+      compensate for the weaker pawn structure, since the position
+      simplifies less than White would like if Black keeps pieces on.
+
+  - name: Schliemann Defense (Jaenisch Gambit)
+    identifying_moves: [e4, e5, Nf3, Nc6, Bb5, f5]
+    idea: >
+      An aggressive, provocative try that immediately challenges e4 rather
+      than accepting the pin, deliberately avoiding quiet Closed Ruy Lopez
+      theory in favor of early tactical complications.

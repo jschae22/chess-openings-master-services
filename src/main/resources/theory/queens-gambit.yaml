@@ -1,0 +1,71 @@
+opening: Queen's Gambit
+slug: queens-gambit
+main_line: [d4, d5, c4]
+
+overview: >
+  One of the oldest and most respected d4 openings. Not a "true" gambit in
+  the tactical sense — the c4 pawn cannot be held by Black long-term — but
+  the name reflects White offering a pawn to lure Black's d5-pawn away from
+  the center, aiming for a strong center and development lead.
+
+why_main_line_moves_are_played: >
+  2.c4 attacks d5. If Black captures, White simply regains the pawn later
+  (often with e4 or Qa4+/a4 tricks) while getting strong central control and
+  a lead in development — Black cannot hold the extra pawn without falling
+  badly behind. If Black declines, White still gets central space and
+  flexible piece play.
+
+variations:
+  - name: Queen's Gambit Declined
+    identifying_moves: [d4, d5, c4, e6]
+    idea: >
+      The most solid, classical response: keep the central pawn structure
+      intact, at the cost of temporarily boxing in the light-squared
+      bishop behind the e6/d5 pawns.
+    sub_variations:
+      - name: Orthodox Variation
+        identifying_moves: [d4, d5, c4, e6, Nc3, Nf6, Bg5]
+        idea: >
+          White pins the f6-knight and prepares an e3/Nf3 buildup, often
+          aiming for a queenside minority attack (b4-b5) once the position
+          simplifies, to create a long-term weak pawn for Black.
+      - name: Cambridge Springs Defense
+        identifying_moves: [d4, d5, c4, e6, Nc3, Nf6, Bg5, Nbd7, e3, c6, Nf3, Qa5]
+        idea: >
+          Black pins White's c3-knight with the queen and creates immediate
+          tactical pressure, a sharp way to fight for active equality
+          rather than passively accepting the pinned f6-knight's
+          restriction.
+
+  - name: Queen's Gambit Accepted
+    identifying_moves: [d4, d5, c4, dxc4]
+    idea: >
+      Grab the pawn temporarily, then aim for fast, active piece play
+      (...c5, ...b5 expansion) to compensate for handing White the center —
+      since the extra pawn cannot be held long-term anyway.
+    traps: >
+      Trying to hold the extra pawn with ...b5 can run into a4, undermining
+      the pawn chain and leaving Black structurally worse for no lasting
+      material gain.
+
+  - name: Slav Defense
+    identifying_moves: [d4, d5, c4, c6]
+    idea: >
+      Defends d5 with a pawn instead of a piece, keeping the light-squared
+      bishop free to develop outside the pawn chain (...Bf5/...Bg4) before
+      ...e6 — a structural improvement over the Queen's Gambit Declined.
+    sub_variations:
+      - name: Semi-Slav
+        identifying_moves: [d4, d5, c4, c6, Nc3, Nf6, e3, e6]
+        idea: >
+          A hybrid structure combining the Slav's c6 with the QGD's e6,
+          producing extremely rich, combative middlegames (including the
+          heavily analyzed Meran) that have been a favorite of many World
+          Champions.
+
+  - name: Catalan
+    identifying_moves: [d4, d5, c4, e6, g3]
+    idea: >
+      Combines Queen's Gambit central pressure with a kingside fianchetto
+      (Bg2) eyeing d5, b7, and the long diagonal — popular at the top level
+      for offering long-term pressure with relatively little risk.

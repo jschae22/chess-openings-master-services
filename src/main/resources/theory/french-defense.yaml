@@ -1,0 +1,66 @@
+opening: French Defense
+slug: french-defense
+main_line: [e4, e6, d4, d5]
+
+overview: >
+  A solid, resilient defense in which Black voluntarily accepts a
+  temporarily cramped position — most notably a light-squared bishop hemmed
+  in behind the e6/d5 pawn chain — in exchange for a rock-solid structure
+  and reliable counterattacking chances against White's center.
+
+why_main_line_moves_are_played: >
+  1...e6 prepares ...d5 while keeping the position more closed than 1...e5.
+  2...d5 immediately challenges e4, forcing White to choose: push (Advance),
+  trade (Exchange), or defend/develop through the tension (Nc3/Nd2 main
+  lines).
+
+variations:
+  - name: Advance Variation
+    identifying_moves: [e4, e6, d4, d5, e5]
+    idea: >
+      White gains space and locks the center, planning a kingside buildup
+      while the position stays closed; Black's entire plan is to undermine
+      the base of the pawn chain with ...c5 and ...f6.
+    sub_variations:
+      - name: Milner-Barry Gambit
+        identifying_moves: [e4, e6, d4, d5, e5, c5, c3, Nc6, Nf3, Qb6, Bd3]
+        idea: >
+          White offers the d4 pawn to gain rapid development and open lines
+          toward Black's king, which is still in the center — a sharp,
+          attacking try rather than the Advance's usual slow buildup.
+
+  - name: Exchange Variation
+    identifying_moves: [e4, e6, d4, d5, exd5, exd5]
+    idea: >
+      A symmetrical, more drawish structure often chosen specifically to
+      avoid deep French main-line theory rather than for any independent
+      positional idea. Play revolves around minor-piece activity and
+      whichever side can create a minority-attack target first.
+
+  - name: Tarrasch Variation
+    identifying_moves: [e4, e6, d4, d5, Nd2]
+    idea: >
+      Avoids the Winawer's ...Bb4 pin entirely, since the knight no longer
+      stands on c3. A flexible, solid try for White that is less ambitious
+      than 3.Nc3 but sidesteps its sharpest theory.
+
+  - name: Winawer Variation
+    identifying_moves: [e4, e6, d4, d5, Nc3, Bb4]
+    idea: >
+      Black pins the knight and, after a further e5/a3/Bxc3+ sequence, gives
+      White doubled c-pawns in exchange for surrendering the bishop pair —
+      a long-term structural asset for Black traded for sharp, often
+      opposite-side-castling complications in the middlegame.
+    sub_variations:
+      - name: Poisoned Pawn Winawer
+        identifying_moves: [e4, e6, d4, d5, Nc3, Bb4, e5, c5, a3, Bxc3+, bxc3, Ne7, Qg4, Qc7, Qxg7, Rg8, Qxh7, cxd4]
+        idea: >
+          Black grabs the g7 and h7 pawns while White attacks; regarded as
+          one of the most deeply forced, engine-scrutinized variations in
+          opening theory, requiring precise memorization from both sides.
+
+  - name: Classical Variation
+    identifying_moves: [e4, e6, d4, d5, Nc3, Nf6]
+    idea: >
+      Standard piece development that avoids immediately committing to the
+      Winawer's ...Bb4 pin, keeping options flexible.

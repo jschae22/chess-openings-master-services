@@ -1,0 +1,47 @@
+opening: London System
+slug: london-system
+main_line: [d4, Nf6, Bf4]
+
+overview: >
+  A flexible, setup-based opening for White that can be played almost
+  regardless of what Black does. Rather than reacting to Black's choices,
+  White develops the same pieces to the same squares nearly every game,
+  making it one of the lowest-maintenance openings to learn.
+
+why_main_line_moves_are_played: >
+  2.Bf4 develops the dark-squared bishop before playing e3, since e3 would
+  otherwise lock it in behind the pawn chain (the same structural problem
+  the c1-bishop has in many other d4 openings). Because White's setup is
+  largely independent of Black's replies, the "variations" below are really
+  Black's distinct approaches to meeting it, plus one White move-order
+  sideline.
+
+variations:
+  - name: Fianchetto Setup (Black)
+    identifying_moves: [d4, Nf6, Bf4, g6]
+    idea: >
+      Black meets the London flexibly with a King's-Indian-style
+      fianchetto, contesting the long diagonal rather than mirroring
+      White's development.
+
+  - name: c5 and Qb6 Counter (Black)
+    identifying_moves: [d4, Nf6, Bf4, c5, e3, Qb6]
+    idea: >
+      The most testing modern try against the London: immediate central and
+      queenside pressure hitting b2 and d4 before White finishes the setup,
+      rather than letting White complete the "London triangle" unopposed.
+
+  - name: Nh5 Idea (Black)
+    identifying_moves: [d4, Nf6, Bf4, Nh5]
+    idea: >
+      Directly challenges the f4-bishop, forcing White to make an early
+      decision about it (retreat, trade, or defend) instead of following
+      the standard slow buildup on autopilot.
+
+  - name: Jobava London (White sideline)
+    identifying_moves: [d4, Nf6, Nc3, d5, Bf4]
+    idea: >
+      A more aggressive move order that delays e3 to keep options open for
+      a faster kingside attack (sometimes Qd2 and O-O-O), rather than the
+      standard slow London buildup — primarily a way for White to add
+      sharper, less well-mapped options to the repertoire.
