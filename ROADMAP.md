@@ -94,8 +94,8 @@ answers are grounded rather than free-associated.
       + repos); the `embedding` column is deliberately unmapped (native SQL handles
       pgvector distance ops in later phases). Local `docker-compose.yml` (in `frontend/`)
       switched to the `pgvector/pgvector:pg16` image so the extension is available in dev.
-      **Still open:** run the migration against a live DB to verify (needs Docker Desktop
-      up) — `mvnw compile` passes but Flyway/Hibernate-validate haven't run yet.
+      Verified 2026-08-27: all three migrations apply cleanly against a live pgvector
+      Postgres, Hibernate `validate` passes for the new entities, `mvnw test` green.
 - [ ] **Ingestion pipeline.** A small batch job/script that parses the YAML corpus, chunks
       it, embeds it, and writes to the new tables — idempotent/re-runnable so you can demo
       updating theory content later without a full rebuild. Planned approach: generic
