@@ -51,4 +51,4 @@ jobs:
           image: ${{ env.IMAGE }}:${{ github.sha }}
           flags: >-
             --allow-unauthenticated
-            --set-secrets=DB_URL=neon-db-url:latest,CLAUDE_API_KEY=claude-api-key:latest,VOYAGE_API_KEY=voyage-api-key:latest,JWT_SECRET=jwt-secret:latest
+            --set-secrets=DB_URL=NEON_DB_URL:latest,CLAUDE_API_KEY=CLAUDE_API_KEY:latest,VOYAGE_API_KEY=VOYAGE_API_KEY:latest,JWT_SECRET=JWT_SECRET:latest
