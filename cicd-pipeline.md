@@ -17,7 +17,8 @@ decided but GitHub or the workflows don't enforce it yet (see [Rollout](#rollout
 
 - `main` is the only long-lived branch. It is always releasable.
 - All work happens on short-lived branches cut from `main` and merged back via pull request.
-- Nothing is committed directly to `main`. The long-lived `dev` branch is retired (see Rollout).
+- Nothing is committed directly to `main`. The long-lived `dev` branch is retired (see Rollout). Combined testing uses
+  throwaway branches (see [Integration testing](#integration-testing-policy)).
 
 ```
 main ──●────────●──────────●──▶  (every merge deploys)
@@ -56,6 +57,33 @@ When one feature touches both repos (e.g. a new API plus UI):
 - Use the **same branch name** in both repos.
 - Each PR links the other in its description.
 - Merge the backend first when the change is backward compatible, otherwise coordinate the deploys.
+
+### Integration testing (Policy)
+
+There is no long-lived integration branch. When several independent features or fixes should be tested together
+before release, use a throwaway branch:
+
+1. **Create it from `main`:** `git switch -c integration-<scope-words> main`, e.g. `integration-search-and-coach`.
+2. **Merge the feature branches into it:** `git merge feat-opening-search-filter`, and so on. Features that depend on
+   each other are not combined this way: merge the first to `main` through its PR, then branch the second from `main`.
+3. **Test locally.** If the deployed environment is needed, push the branch and deploy it to staging (below).
+4. **Delete it** when done. An `integration-*` branch is never merged into `main` and never opened as a PR. Each
+   feature still reaches `main` through its own PR.
+
+**Deploying an integration branch to staging:** run CD manually from the branch. Any ref other than `main` deploys to
+the staging Cloud Run service.
+
+```bash
+git push -u origin integration-search-and-coach
+gh workflow run cd.yml --ref integration-search-and-coach
+```
+
+Notes:
+- A staging deploy is manual and temporary. Redeploying from another branch overwrites it.
+- **Open question:** whether staging and prod share one Neon database. If they do, a migration included in a staging
+  deploy also changes the prod schema. Confirm this before testing migrations on staging.
+- For a large feature that cannot be merged within a week, prefer merging it to `main` behind a feature flag, off in
+  prod, over a long-lived branch.
 
 ---
 
