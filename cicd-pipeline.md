@@ -80,8 +80,11 @@ gh workflow run cd.yml --ref integration-search-and-coach
 
 Notes:
 - A staging deploy is manual and temporary. Redeploying from another branch overwrites it.
-- **Open question:** whether staging and prod share one Neon database. If they do, a migration included in a staging
-  deploy also changes the prod schema. Confirm this before testing migrations on staging.
+- **Staging and prod share one Neon database** (confirmed 2026-10-20: both Cloud Run services read the same
+  `NEON_DB_URL` secret). A Flyway migration run by a staging deploy therefore also changes the prod schema, and
+  prod's running code must tolerate it. Keep migrations additive and backward compatible (add columns and tables;
+  never drop or rename in the same release that stops using them). Test migrations locally against pgvector first.
+  Giving staging its own Neon branch or database is a future improvement.
 - For a large feature that cannot be merged within a week, prefer merging it to `main` behind a feature flag, off in
   prod, over a long-lived branch.
 
@@ -169,7 +172,8 @@ Rules:
 
 ## 6. Repository settings (target state)
 
-Applied to **both** repos, using a ruleset on `main`:
+Applied to **both** repos, using a ruleset on `main`. Backend: applied 2026-10-20 as ruleset `main-protection`.
+Frontend: pending.
 
 - [ ] Require a pull request, with 0 required approvals
 - [ ] Require status checks (job names in §4) and require branches to be up to date
@@ -216,10 +220,10 @@ Backend progress is marked below; the frontend follows the same steps afterwards
 1. [x] Commit the uncommitted backend changes on a feature branch (`feat-theory-ingestion-pipeline`).
 2. [x] Reconcile `dev` into `main`. Backend done: `main` carries all of `dev`, with CD paused. Frontend pending.
 3. [x] Update `ci.yml`: feature-branch and PR triggers, plus a pgvector service so the context test can run.
-4. [ ] Update `cd.yml` to deploy from `main` only (re-enable the push trigger, `main` → prod).
-5. [ ] Add the PR template, CODEOWNERS and Dependabot config. *(in progress, backend)*
-6. [ ] Enable the `main` ruleset and repo settings from §6.
-7. [ ] Delete the `dev` branch, locally and on GitHub.
+4. [ ] Update `cd.yml` to deploy from `main` only (re-enable the push trigger, `main` → prod). Backend: next.
+5. [x] Add the PR template, CODEOWNERS and Dependabot config. Backend done.
+6. [x] Enable the `main` ruleset and repo settings from §6. Backend done (ruleset `main-protection`, 2026-10-20).
+7. [x] Delete the `dev` branch, locally and on GitHub. Backend done.
 8. [ ] Add the smoke test and release steps.
 9. [ ] Remove the stale `GEMINI_API_KEY` secret from the frontend repo.
 
