@@ -2,5 +2,9 @@ package com.chessmaster.services.opening;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface OpeningRepository extends JpaRepository<Opening, Long> {
+
+    Optional<Opening> findByName(String name);
 }
