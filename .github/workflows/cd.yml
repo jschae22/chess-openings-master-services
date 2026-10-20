@@ -1,8 +1,9 @@
 name: CD
 
+# Paused while the PR-based pipeline is rolled out (see cicd-pipeline.md).
+# Re-enable the push trigger on main once CI and the main ruleset are in place.
 on:
-  push:
-    branches: [main, dev]
+  workflow_dispatch:
 
 env:
   PROJECT_ID: chess-openings-master
