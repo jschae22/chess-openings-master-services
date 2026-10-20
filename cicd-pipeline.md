@@ -157,8 +157,8 @@ Rules:
   retired along with the `dev` branch. Revisit once the app has real users: the alternative is deploying `main` to
   staging and promoting to prod through a GitHub Environment with a manual approval. The staging Cloud Run services
   stay available for manual `workflow_dispatch` deploys of a branch.
-- **CD is currently paused:** `cd.yml` is `workflow_dispatch` only. The `push` trigger on `main` returns as the final
-  rollout step, after the ruleset is on.
+- **Triggers:** `cd.yml` runs on every push to `main` (→ prod) and on manual `workflow_dispatch`. A manual run from any
+  other ref deploys to staging.
 - After deploy, a smoke test must pass: the backend health endpoint, and `/` returning 200 on the frontend.
   This needs `spring-boot-starter-actuator` in the backend.
 - Every prod deploy creates a GitHub Release with generated notes, for traceability and rollback.
@@ -173,7 +173,7 @@ Rules:
 ## 6. Repository settings (target state)
 
 Applied to **both** repos, using a ruleset on `main`. Backend: applied 2026-10-20 as ruleset `main-protection`.
-Frontend: pending.
+Frontend: applied 2026-10-20, same ruleset name, required check `Lint, Test, Build`.
 
 - [ ] Require a pull request, with 0 required approvals
 - [ ] Require status checks (job names in §4) and require branches to be up to date
@@ -218,12 +218,12 @@ Order of operations to move from today's state to the policy above. Backend firs
 Backend progress is marked below; the frontend follows the same steps afterwards.
 
 1. [x] Commit the uncommitted backend changes on a feature branch (`feat-theory-ingestion-pipeline`).
-2. [x] Reconcile `dev` into `main`. Backend done: `main` carries all of `dev`, with CD paused. Frontend pending.
+2. [x] Reconcile `dev` into `main`. Backend done: `main` carries all of `dev`, with CD paused. Frontend done the same way.
 3. [x] Update `ci.yml`: feature-branch and PR triggers, plus a pgvector service so the context test can run.
-4. [ ] Update `cd.yml` to deploy from `main` only (re-enable the push trigger, `main` → prod). Backend: next.
-5. [x] Add the PR template, CODEOWNERS and Dependabot config. Backend done.
-6. [x] Enable the `main` ruleset and repo settings from §6. Backend done (ruleset `main-protection`, 2026-10-20).
-7. [x] Delete the `dev` branch, locally and on GitHub. Backend done.
+4. [ ] Update `cd.yml` to deploy from `main` only (push trigger on `main` → prod). Backend in PR #15 (merging deploys prod). Frontend in its PR #3, merge after the backend deploy succeeds.
+5. [x] Add the PR template, CODEOWNERS and Dependabot config. Backend and frontend done.
+6. [x] Enable the `main` ruleset and repo settings from §6. Backend and frontend done (ruleset `main-protection`, 2026-10-20).
+7. [x] Delete the `dev` branch, locally and on GitHub. Backend and frontend done.
 8. [ ] Add the smoke test and release steps.
 9. [ ] Remove the stale `GEMINI_API_KEY` secret from the frontend repo.
 

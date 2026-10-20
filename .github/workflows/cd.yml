@@ -1,8 +1,10 @@
 name: CD
 
-# Paused while the PR-based pipeline is rolled out (see cicd-pipeline.md).
-# Re-enable the push trigger on main once CI and the main ruleset are in place.
+# main deploys to prod. A manual run from any other ref deploys to staging
+# (used for integration branches — see cicd-pipeline.md).
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 env:
