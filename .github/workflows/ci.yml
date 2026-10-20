@@ -2,12 +2,38 @@ name: CI
 
 on:
   pull_request:
-    branches: [main, dev]
+    branches: [main]
+  push:
+    branches-ignore: [main]
 
 jobs:
   ci:
     name: Test & Build
     runs-on: ubuntu-latest
+
+    # Spring context tests run Flyway against a real pgvector Postgres.
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: chess_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DB_URL: jdbc:postgresql://localhost:5432/chess_test
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      # Dummy values: tests must never call Claude or Voyage.
+      CLAUDE_API_KEY: ci-dummy-key
+      VOYAGE_API_KEY: ci-dummy-key
 
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +45,14 @@ jobs:
           cache: maven
 
       - name: Test
-        run: mvn -q test
+        run: mvn --batch-mode --no-transfer-progress test
 
       - name: Build (skip tests — already ran)
-        run: mvn -q -DskipTests package
+        run: mvn --batch-mode --no-transfer-progress -DskipTests package
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
