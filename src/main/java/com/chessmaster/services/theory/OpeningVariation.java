@@ -41,6 +41,11 @@ public class OpeningVariation {
         this.identifyingMoves = identifyingMoves;
     }
 
+    public void updateFrom(OpeningVariation parent, String name) {
+        this.parent = parent;
+        this.name = name;
+    }
+
     public Long getId() { return id; }
     public Opening getOpening() { return opening; }
     public OpeningVariation getParent() { return parent; }

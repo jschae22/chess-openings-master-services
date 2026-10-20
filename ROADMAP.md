@@ -65,10 +65,12 @@ answers are grounded rather than free-associated.
       considered tradeoff. API key obtained and placed locally in `application-local.yml`
       (gitignored); `voyage.api-key`/`voyage.model` (default `voyage-4-lite`) wired into
       `application.yml`, `application-local.yml.template`, and the backend's `cd.yml`
-      Cloud Run secret mapping (`VOYAGE_API_KEY=voyage-api-key`), mirroring the Claude key
-      setup from Phase 0. **Still open:** create the `voyage-api-key` secret in GCP Secret
-      Manager and grant the Cloud Run service account `roles/secretmanager.secretAccessor`
-      on it, same as the Claude key's prod setup.
+      Cloud Run secret mapping (`VOYAGE_API_KEY=VOYAGE_API_KEY`), mirroring the Claude key
+      setup from Phase 0. `VOYAGE_API_KEY` secret created in GCP Secret Manager and the
+      Cloud Run runtime service account (`…-compute@developer.gserviceaccount.com`) granted
+      `roles/secretmanager.secretAccessor` on it; staging deploy verified 2026-08-28. All
+      Cloud Run secrets standardised to `UPPER_SNAKE` names at the same time
+      (`neon-db-url`→`NEON_DB_URL`, `claude-api-key`→`CLAUDE_API_KEY`).
 - [x] **Corpus.** Drafted as structured YAML (not the flat `description` column) under
       `backend/src/main/resources/theory/<slug>.yaml`, one file per opening, covering all 9
       seeded openings. Each file has an opening-level overview plus a `variations` tree
@@ -96,12 +98,23 @@ answers are grounded rather than free-associated.
       switched to the `pgvector/pgvector:pg16` image so the extension is available in dev.
       Verified 2026-08-27: all three migrations apply cleanly against a live pgvector
       Postgres, Hibernate `validate` passes for the new entities, `mvnw test` green.
-- [ ] **Ingestion pipeline.** A small batch job/script that parses the YAML corpus, chunks
-      it, embeds it, and writes to the new tables — idempotent/re-runnable so you can demo
-      updating theory content later without a full rebuild. Planned approach: generic
-      chunker (`section` = the YAML key, so new fields need no code change), and a content
-      hash stored per chunk so a re-run only re-embeds chunks whose text actually changed
-      (the "update theory without a full rebuild" demo).
+- [x] **Ingestion pipeline.** `com.chessmaster.services.theory.ingestion` — a Spring
+      `ApplicationRunner` gated by `ingest.enabled=true` that parses the YAML corpus,
+      embeds it via Voyage, writes `opening_variations` + `theory_chunks`, logs an
+      insert/update/unchanged/delete report, and exits. Run:
+      `./mvnw spring-boot:run -Dspring-boot.run.arguments=--ingest.enabled=true
+      -Dspring-boot.run.profiles=local`. `TheoryCorpusParser` is the generic chunker
+      (`section` = the YAML key; structural keys excluded; unit-tested with no DB/network).
+      `V4__add_theory_chunk_content_hash.sql` adds `content_hash` (SHA-256 of the composed
+      chunk text) + a `(opening_id, coalesce(variation_id,0), section)` unique index;
+      re-runs embed only changed chunks and delete rows the corpus dropped. Variations are
+      matched by their full identifying-move sequence (not name), so renames don't
+      duplicate. All embedding is done in one pass to minimise requests; the free Voyage
+      tier's 3 req/min cap is handled by `voyage.min-request-interval` (default 21s) plus
+      429 retry/backoff in `VoyageEmbeddingClient`. Verified 2026-08-27 against the local
+      pgvector DB: 9 openings → 59 variations, 90 chunks, all `vector(1024)`; a second run
+      re-embeds nothing; a one-field YAML edit re-embeds exactly one chunk. **Still open:**
+      prod DB (Neon) needs the job run against it once after deploy — CD does not run it.
 - [ ] **Retrieval service.** Given the opening + current FEN/`moveHistory` + user question:
       first find the most specific `opening_variations` row whose `identifying_moves` is a
       prefix of the request's move history (deterministic match, no embedding needed for

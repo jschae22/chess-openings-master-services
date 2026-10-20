@@ -15,6 +15,14 @@ claude:
 voyage:
   api-key: YOUR_VOYAGE_API_KEY_HERE
   model: voyage-4-lite
+  # Free Voyage tier is 3 req/min; ingestion spaces requests out by this much.
+  min-request-interval: 21s
+
+# Run the theory ingestion job (parses backend/src/main/resources/theory/*.yaml,
+# embeds it, writes opening_variations + theory_chunks) then exits:
+#   ./mvnw spring-boot:run -Dspring-boot.run.arguments=--ingest.enabled=true \
+#       -Dspring-boot.run.profiles=local
+# Re-runnable: only chunks whose text changed are re-embedded.
 
 jwt:
   secret: YOUR_JWT_SECRET_HERE_min32chars
