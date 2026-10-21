@@ -52,6 +52,7 @@ jobs:
           docker push ${{ env.IMAGE }}:latest
 
       - name: Deploy to Cloud Run
+        id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ steps.service.outputs.name }}
@@ -60,3 +61,18 @@ jobs:
           flags: >-
             --allow-unauthenticated
             --set-secrets=DB_URL=NEON_DB_URL:latest,CLAUDE_API_KEY=CLAUDE_API_KEY:latest,VOYAGE_API_KEY=VOYAGE_API_KEY:latest,JWT_SECRET=JWT_SECRET:latest
+
+      - name: Smoke test
+        env:
+          SERVICE_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          check() {
+            for i in $(seq 1 10); do
+              code=$(curl -s -o /dev/null -w '%{http_code}' "$SERVICE_URL$1" || true)
+              [ "$code" = "200" ] && echo "OK   $1" && return 0
+              echo "wait $1 (attempt $i, HTTP $code)"; sleep 6
+            done
+            echo "FAIL $1" && return 1
+          }
+          check /actuator/health
+          check /api/openings

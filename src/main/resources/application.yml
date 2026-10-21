@@ -25,5 +25,15 @@ voyage:
   # Voyage account is capped at 3 requests/minute; set to 0s once billing is on.
   min-request-interval: ${VOYAGE_MIN_REQUEST_INTERVAL:21s}
 
+# Only /actuator/health is exposed, without details (used by the CD smoke test).
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
 server:
   port: 8080
