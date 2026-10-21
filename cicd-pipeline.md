@@ -159,8 +159,11 @@ Rules:
   stay available for manual `workflow_dispatch` deploys of a branch.
 - **Triggers:** `cd.yml` runs on every push to `main` (→ prod) and on manual `workflow_dispatch`. A manual run from any
   other ref deploys to staging.
-- After deploy, a smoke test must pass: the backend health endpoint, and `/` returning 200 on the frontend.
-  This needs `spring-boot-starter-actuator` in the backend.
+- **Smoke test (Policy, live in both repos):** after deploying, CD polls the new Cloud Run URL (10 attempts, 6s apart)
+  and fails the run unless every check returns HTTP 200. Backend: `/actuator/health` and `/api/openings`. Frontend:
+  `/` and `/api/openings` (through the nginx proxy, which catches a broken `BACKEND_URL`). A failed smoke test fails the
+  run but does not roll back the revision: follow the rollback steps below.
+- **Docs-only merges don't deploy:** CD ignores pushes that change only `**.md`, CODEOWNERS or the PR template.
 - Every prod deploy creates a GitHub Release with generated notes, for traceability and rollback.
 - **Rollback:** redeploy the previous image SHA on Cloud Run, or revert the squash commit through a new PR.
 
@@ -220,12 +223,12 @@ Backend progress is marked below; the frontend follows the same steps afterwards
 1. [x] Commit the uncommitted backend changes on a feature branch (`feat-theory-ingestion-pipeline`).
 2. [x] Reconcile `dev` into `main`. Backend done: `main` carries all of `dev`, with CD paused. Frontend done the same way.
 3. [x] Update `ci.yml`: feature-branch and PR triggers, plus a pgvector service so the context test can run.
-4. [ ] Update `cd.yml` to deploy from `main` only (push trigger on `main` → prod). Backend in PR #15 (merging deploys prod). Frontend in its PR #3, merge after the backend deploy succeeds.
+4. [x] Update `cd.yml` to deploy from `main` only (push trigger on `main` → prod). Backend and frontend done.
 5. [x] Add the PR template, CODEOWNERS and Dependabot config. Backend and frontend done.
 6. [x] Enable the `main` ruleset and repo settings from §6. Backend and frontend done (ruleset `main-protection`, 2026-10-20).
 7. [x] Delete the `dev` branch, locally and on GitHub. Backend and frontend done.
-8. [ ] Add the smoke test and release steps.
-9. [ ] Remove the stale `GEMINI_API_KEY` secret from the frontend repo.
+8. [ ] Add the smoke test (done in both repos) and the release-tag step (pending: GitHub Release on each prod deploy).
+9. [x] Remove the stale `GEMINI_API_KEY` secret from the frontend repo. Done 2026-10-20.
 
 Detailed implementation notes and snippets for these steps are in `pipeline-setup.md`. Fold that file into this
 one, or retire it, once the rollout completes.
