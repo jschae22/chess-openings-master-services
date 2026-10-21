@@ -2,9 +2,10 @@ package com.chessmaster.services.theory.ingestion;
 
 import com.chessmaster.services.theory.ingestion.ParsedOpening.ParsedChunk;
 import com.chessmaster.services.theory.ingestion.ParsedOpening.ParsedVariation;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +37,7 @@ public class TheoryCorpusParser {
         JsonNode root;
         try (InputStream in = resource.getInputStream()) {
             root = yaml.readTree(in);
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             throw new IllegalStateException("Failed to read theory file " + filename, e);
         }
         if (root == null || !root.isObject()) {
