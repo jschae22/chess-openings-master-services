@@ -5,8 +5,18 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      maven-minor-patch:
+        update-types: ["minor", "patch"]
+    ignore:
+      # Boot 4 is a migration, tracked on its own branch (chore-upgrade-spring-boot-4).
+      - dependency-name: "org.springframework.boot:spring-boot-starter-parent"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns: ["*"]
