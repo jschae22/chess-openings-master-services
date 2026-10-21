@@ -113,8 +113,10 @@ answers are grounded rather than free-associated.
       tier's 3 req/min cap is handled by `voyage.min-request-interval` (default 21s) plus
       429 retry/backoff in `VoyageEmbeddingClient`. Verified 2026-08-27 against the local
       pgvector DB: 9 openings → 59 variations, 90 chunks, all `vector(1024)`; a second run
-      re-embeds nothing; a one-field YAML edit re-embeds exactly one chunk. **Still open:**
-      prod DB (Neon) needs the job run against it once after deploy — CD does not run it.
+      re-embeds nothing; a one-field YAML edit re-embeds exactly one chunk. Run against
+      the Neon DB on 2026-10-20 after the first trunk-based prod deploy, with the same counts as
+      locally. Staging and prod share that DB, so one run covers both. CD does not run ingestion:
+      re-run it by hand after any corpus change.
 - [ ] **Retrieval service.** Given the opening + current FEN/`moveHistory` + user question:
       first find the most specific `opening_variations` row whose `identifying_moves` is a
       prefix of the request's move history (deterministic match, no embedding needed for
