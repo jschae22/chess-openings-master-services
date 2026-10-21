@@ -5,6 +5,11 @@ name: CD
 on:
   push:
     branches: [main]
+    # Docs-only merges don't change what runs in prod, so skip the redeploy.
+    paths-ignore:
+      - "**.md"
+      - ".github/CODEOWNERS"
+      - ".github/pull_request_template.md"
   workflow_dispatch:
 
 env:
