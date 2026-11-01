@@ -194,6 +194,12 @@ differentiator for interviews.
       on every chat request), cleared on ingestion, and pre-normalize `identifying_moves`
       at load time. Only worth it if the corpus grows ~10x or the latency logging above
       shows retrieval time mattering; at 59 variations it is negligible.
+- [ ] Structured JSON logging with real severities (`logging.structured.format.console: gcp`,
+      Spring Boot 3.4+). Today the app writes plain text, so Cloud Logging stores every line
+      as severity `DEFAULT` and `severity>=WARNING` filters or alerts miss `WARN` lines such
+      as "Theory retrieval failed". Also enables log-based alerts on retrieval `ERROR`s.
+      Also stop exceptions from echoing request headers into logs (a malformed
+      `Authorization` header printed a Voyage key into Cloud Logging).
 - [ ] Citation surfacing in the frontend (which theory chunk/source grounded the answer) —
       nice UX win and a common real-world RAG requirement.
 

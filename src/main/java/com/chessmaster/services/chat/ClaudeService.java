@@ -40,7 +40,7 @@ public class ClaudeService {
     public ClaudeService(@Value("${claude.api-key}") String apiKey,
                           @Value("${claude.model:claude-haiku-4-5}") String model,
                           TheoryRetrievalService retrieval) {
-        this.client = AnthropicOkHttpClient.builder().apiKey(apiKey).build();
+        this.client = AnthropicOkHttpClient.builder().apiKey(apiKey.trim()).build();
         this.model = model;
         this.retrieval = retrieval;
     }
@@ -78,7 +78,9 @@ public class ClaudeService {
         Message response;
         try {
             response = client.messages().create(params);
-        } catch (AnthropicException e) {
+        } catch (AnthropicException | IllegalArgumentException e) {
+            // IllegalArgumentException: the HTTP client rejects malformed config (e.g. a bad header value)
+            // before any request is sent; surface it as a 502 rather than letting Spring turn it into a 403.
             throw new ChatException("Claude API request failed", e);
         }
 
