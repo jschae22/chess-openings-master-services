@@ -11,6 +11,27 @@ Repo layout:
 
 ---
 
+## Working agreement: how changes ship
+
+All work follows [`cicd-pipeline.md`](cicd-pipeline.md) (trunk-based: short-lived branch → PR →
+squash merge to `main` → auto-deploy to prod). Before starting or resuming any roadmap item:
+
+1. **Check git first:** `git status -sb`, `git branch -a`, and `git fetch` to see what `main` has
+   gained. Don't assume the current branch is the right one: a previous branch may already be
+   squash-merged, and `main` may have moved (dependency bumps, migrations).
+2. **Pick the branch:** continue the existing branch if it covers this roadmap item and is still
+   open; otherwise cut a new one from an up-to-date `main` (stash uncommitted work, switch, pull,
+   `git switch -c`, pop).
+3. **Name and scope it** per `cicd-pipeline.md` §1: `<type>-<scope-words>`, one roadmap item (or
+   one tightly coupled pair) per branch, merged within about a week.
+4. **Before the PR:** CI must be green (`Test & Build`), run `/code-review`, and if the change
+   adds a Flyway migration or needs an ingestion re-run, say so in the PR's deploy notes. Staging
+   and prod share one Neon DB, so migrations must be additive.
+5. **Cross-repo items** (e.g. frontend grounding notice) reuse the same branch name in the
+   frontend repo and link the PRs.
+
+---
+
 ## Phase 0 — Housekeeping (do first)
 
 - [x] Commit the currently-uncommitted backend work (`chat/` package, `SecurityConfig`,

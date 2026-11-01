@@ -245,8 +245,32 @@ Backend progress is marked below; the frontend follows the same steps afterwards
 8. [ ] Add the smoke test (done in both repos) and the release-tag step (pending: GitHub Release on each prod deploy).
 9. [x] Remove the stale `GEMINI_API_KEY` secret from the frontend repo. Done 2026-10-20.
 
-Detailed implementation notes and snippets for these steps are in `pipeline-setup.md`. Fold that file into this
-one, or retire it, once the rollout completes.
+The original implementation plan (`pipeline-setup.md`, written for the retired `dev` flow) was removed once the
+rollout was done. Its snippets remain in git history; the items it still held are in the [Backlog](#backlog).
+
+## Backlog
+
+Not-yet-done improvements carried over from the original plan. None is required by the policy above.
+
+- **Pin GitHub Actions to commit SHAs** (supply chain), with a version comment. The `github-actions` Dependabot
+  ecosystem then keeps the pins current. Both repos.
+- **Readable CI logs (backend):** replace `-q` on the `mvn` calls with `--batch-mode --no-transfer-progress`, and upload
+  `target/surefire-reports` as an artifact on failure.
+- **Spotless (backend):** `spotless-maven-plugin` with google-java-format and unused-import removal, `check` bound to
+  the build. Run `spotless:apply` once on its own branch, since it reformats the whole tree.
+- **JaCoCo (backend):** `prepare-agent` + `report`, with a PR coverage comment in report-only mode at first; raise the
+  threshold as tests are added.
+- **Frontend ESLint + Prettier** check on top of the existing `tsc --noEmit` lint script.
+- **Release tag on prod deploy:** the `release` job (needs `deploy`, `main` only, `contents: write`,
+  `gh release create ... --generate-notes`). Same as rollout step 8's pending half.
+- **Manual ingestion workflow (backend):** an `ingest.yml` `workflow_dispatch` job that runs
+  `spring-boot:run -Dspring-boot.run.arguments=--ingest.enabled=true`, replacing the by-hand run after a corpus
+  change. Needs `NEON_DB_URL`, `VOYAGE_API_KEY` and `CLAUDE_API_KEY` copied into GitHub Actions secrets (they live
+  only in GCP Secret Manager today). Staging and prod share one database, so there is no environment choice to make.
+- **Canary on prod:** deploy with `--no-traffic --tag candidate`, smoke-test the tagged URL, then shift traffic.
+  Defer until there is real traffic.
+- **Publish the `/api/chat` contract** (OpenAPI via springdoc) so the frontend has something concrete to build against.
+- **CLAUDE.md:** add one to the backend (none exists) and fix the frontend's, which still references Gemini.
 
 ## Open decisions
 
