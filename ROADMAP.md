@@ -167,8 +167,28 @@ answers are grounded rather than free-associated.
       opening, line-matched-but-uncovered question): disclosure and refusal behaved as
       intended. Known limit: `GROUNDED` means "line matched", not "notes answered the
       question"; the reply text covers that case. Before/after comparison against the Phase 1
-      prompt is deferred to Phase 3. Follow-ups: frontend notice reading `grounding`, and
-      passing the opening's `side` into the prompt (the coach assumed the student was White).
+      prompt is deferred to Phase 3. Follow-ups are listed below. Prod verified 2026-11-01
+      after #25/#26 (all three statuses returned correctly against Cloud Run).
+
+### Next steps (follow-ups to Phase 2)
+
+- [ ] **Backend: pass the opening's `side` into the prompt.** The coach assumes the student
+      plays White (seen in the Najdorf and Sicilian answers). `Opening` already has `side`
+      (WHITE/BLACK); include it in the user message so advice is from the right perspective.
+- [ ] **Backend: prompt wording.** Replies say "your notes" / "your theory notes" as if the
+      student wrote them; the no-notes wording already says "our". Make the grounded and
+      partial wording consistent, and tone down "Based on your theory notes" in the `PARTIAL`
+      case (the notes are only loosely related there). Also stop the reply ending on a
+      generic follow-up question when the student asked a direct one.
+- [ ] **Frontend (separate repo, new feature branch): show a notice from `grounding`.**
+      `ChatResponse.grounding` is `GROUNDED | PARTIAL | UNKNOWN_OPENING | ERROR`. Show a
+      subtle note for the non-`GROUNDED` values ("not checked against our theory notes" /
+      "we don't have notes for this line") so a student knows when an answer is general
+      knowledge. Update the frontend `ChatResponse` type and check what the UI does with an
+      unexpected value.
+- [ ] **Corpus: spot-check the English Attack text** (`...b5-b4, ...a5-a4` in the Sicilian
+      file) against a trusted source; the coach repeats whatever the notes say. Feeds the
+      Phase 3 golden set.
 
 ## Phase 3 — Eval harness
 
