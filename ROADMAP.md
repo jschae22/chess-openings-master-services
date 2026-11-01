@@ -138,15 +138,37 @@ answers are grounded rather than free-associated.
       the Neon DB on 2026-10-20 after the first trunk-based prod deploy, with the same counts as
       locally. Staging and prod share that DB, so one run covers both. CD does not run ingestion:
       re-run it by hand after any corpus change.
-- [ ] **Retrieval service.** Given the opening + current FEN/`moveHistory` + user question:
-      first find the most specific `opening_variations` row whose `identifying_moves` is a
-      prefix of the request's move history (deterministic match, no embedding needed for
-      this step), then embed the query and pull top-k relevant `theory_chunks` filtered to
-      that opening/variation, injected into the Claude prompt in place of the bare opening
-      name.
-- [ ] Update `ClaudeService`'s prompt construction to include retrieved context, with
-      instruction to answer from the provided context and say when something isn't covered
-      (reduces hallucination on obscure lines — worth demoing before/after).
+- [x] **Retrieval service.** `com.chessmaster.services.theory.retrieval`:
+      `VariationMatcher` finds every variation whose `identifying_moves` is a prefix of the
+      request's move history (check/annotation suffixes ignored; most specific = deepest), then
+      `TheoryRetrievalService` embeds the question with Voyage and runs a pgvector cosine
+      search (`retrieval.top-k`, default 5) over opening-level chunks plus the matched
+      variation and its ancestors; `retrieval.variation-slots` (default 3) of the top-k are
+      reserved for the line's own chunks so generic opening text can't crowd them out.
+      Covered by unit tests plus a `@SpringBootTest` against real pgvector with Voyage
+      stubbed. Verified 2026-11-01 against the local pgvector DB: a Najdorf
+      + `Be3` line matches English Attack and ranks its `idea` chunk first. Each result
+      carries a `Status` (`GROUNDED` = line matched and chunks found, `PARTIAL` = opening known
+      but line not matched, `UNKNOWN_OPENING`, `ERROR` = retrieval failed, chat still answers
+      ungrounded). A chunk-distance threshold was tried and dropped: Voyage distances sit at
+      0.8-1.0 for on-topic and off-topic questions alike (an off-topic pasta question scored
+      closer than an on-topic one), so it cannot separate them. Distance is still returned for
+      the Phase 3 evals. `GROUNDED` also requires a returned chunk belonging to the matched
+      line; opening-level text alone is `PARTIAL`. Query embedding bypasses the ingestion
+      throttle/retry (single attempt, `voyage.query-timeout` default 5s), so a Voyage 429 or
+      timeout degrades to `ERROR` (ungrounded answer) instead of stalling chat. Open: the
+      free tier's 3 req/min still means frequent ungrounded fallbacks until billing is on.
+- [x] Update `ClaudeService`'s prompt construction to include retrieved context, with
+      instruction to answer from the provided context and say when something isn't covered.
+      The system prompt treats the "Theory notes" as source of truth and forbids inventing
+      lines; the notes block is worded per status (matched line / loosely related / none
+      available, so say it is unchecked). `ChatResponse` now returns `grounding` alongside
+      `reply`. Verified end-to-end 2026-11-01 (4 questions: grounded, partial, unknown
+      opening, line-matched-but-uncovered question): disclosure and refusal behaved as
+      intended. Known limit: `GROUNDED` means "line matched", not "notes answered the
+      question"; the reply text covers that case. Before/after comparison against the Phase 1
+      prompt is deferred to Phase 3. Follow-ups: frontend notice reading `grounding`, and
+      passing the opening's `side` into the prompt (the coach assumed the student was White).
 
 ## Phase 3 — Eval harness
 
@@ -168,6 +190,10 @@ differentiator for interviews.
       cost (Claude-specific feature, directly relevant given the switch).
 - [ ] Cost/latency logging per chat request (tokens in/out, retrieval time, model time) —
       basic observability, cheap to add, good talking point.
+- [ ] Cache the per-opening variation list used by retrieval (currently loaded and matched
+      on every chat request), cleared on ingestion, and pre-normalize `identifying_moves`
+      at load time. Only worth it if the corpus grows ~10x or the latency logging above
+      shows retrieval time mattering; at 59 variations it is negligible.
 - [ ] Citation surfacing in the frontend (which theory chunk/source grounded the answer) —
       nice UX win and a common real-world RAG requirement.
 

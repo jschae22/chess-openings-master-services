@@ -29,8 +29,8 @@ public class ChatController {
         }
 
         try {
-            String reply = claudeService.chat(request);
-            return ResponseEntity.ok(new ChatResponse(reply));
+            ChatResult result = claudeService.chat(request);
+            return ResponseEntity.ok(new ChatResponse(result.reply(), result.grounding()));
         } catch (ChatException e) {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                     .body("AI coach is unavailable. Please try again later.");
