@@ -138,15 +138,31 @@ answers are grounded rather than free-associated.
       the Neon DB on 2026-10-20 after the first trunk-based prod deploy, with the same counts as
       locally. Staging and prod share that DB, so one run covers both. CD does not run ingestion:
       re-run it by hand after any corpus change.
-- [ ] **Retrieval service.** Given the opening + current FEN/`moveHistory` + user question:
-      first find the most specific `opening_variations` row whose `identifying_moves` is a
-      prefix of the request's move history (deterministic match, no embedding needed for
-      this step), then embed the query and pull top-k relevant `theory_chunks` filtered to
-      that opening/variation, injected into the Claude prompt in place of the bare opening
-      name.
-- [ ] Update `ClaudeService`'s prompt construction to include retrieved context, with
-      instruction to answer from the provided context and say when something isn't covered
-      (reduces hallucination on obscure lines — worth demoing before/after).
+- [x] **Retrieval service.** `com.chessmaster.services.theory.retrieval`:
+      `VariationMatcher` finds every variation whose `identifying_moves` is a prefix of the
+      request's move history (check/annotation suffixes ignored; most specific = deepest), then
+      `TheoryRetrievalService` embeds the question with Voyage and runs a pgvector cosine
+      search (`retrieval.top-k`, default 5) over opening-level chunks plus the matched
+      variation and its ancestors. Verified 2026-11-01 against the local pgvector DB: a Najdorf
+      + `Be3` line matches English Attack and ranks its `idea` chunk first. Each result
+      carries a `Status` (`GROUNDED` = line matched and chunks found, `PARTIAL` = opening known
+      but line not matched, `UNKNOWN_OPENING`, `ERROR` = retrieval failed, chat still answers
+      ungrounded). A chunk-distance threshold was tried and dropped: Voyage distances sit at
+      0.8-1.0 for on-topic and off-topic questions alike (an off-topic pasta question scored
+      closer than an on-topic one), so it cannot separate them. Distance is still returned for
+      the Phase 3 evals. Open: every chat request pays Voyage's 21s free-tier throttle unless
+      `VOYAGE_MIN_REQUEST_INTERVAL=0s` (needs billing on).
+- [x] Update `ClaudeService`'s prompt construction to include retrieved context, with
+      instruction to answer from the provided context and say when something isn't covered.
+      The system prompt treats the "Theory notes" as source of truth and forbids inventing
+      lines; the notes block is worded per status (matched line / loosely related / none
+      available, so say it is unchecked). `ChatResponse` now returns `grounding` alongside
+      `reply`. Verified end-to-end 2026-11-01 (4 questions: grounded, partial, unknown
+      opening, line-matched-but-uncovered question): disclosure and refusal behaved as
+      intended. Known limit: `GROUNDED` means "line matched", not "notes answered the
+      question"; the reply text covers that case. Before/after comparison against the Phase 1
+      prompt is deferred to Phase 3. Follow-ups: frontend notice reading `grounding`, and
+      passing the opening's `side` into the prompt (the coach assumed the student was White).
 
 ## Phase 3 — Eval harness
 
