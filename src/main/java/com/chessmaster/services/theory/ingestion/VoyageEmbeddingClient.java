@@ -3,8 +3,10 @@ package com.chessmaster.services.theory.ingestion;
 import tools.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
@@ -22,6 +24,10 @@ import java.util.Map;
  * on HTTP 429. That makes an ingestion run take a couple of minutes but keeps it
  * within the free tier; set the interval to {@code 0s} once a payment method is
  * added.
+ *
+ * <p>Interactive question embedding ({@link #embedQuery}) deliberately bypasses all
+ * of that: no throttle and no retry, a short timeout, and it fails fast so a chat
+ * request degrades to an ungrounded answer instead of hanging.
  */
 @Component
 public class VoyageEmbeddingClient {
@@ -36,19 +42,35 @@ public class VoyageEmbeddingClient {
     private static final Duration RETRY_BACKOFF = Duration.ofSeconds(25);
 
     private final RestClient http;
+    private final RestClient queryHttp;
     private final String model;
     private final long minRequestIntervalMs;
 
     private long lastRequestAt;
 
+    @Autowired
     public VoyageEmbeddingClient(@Value("${voyage.api-key}") String apiKey,
                                  @Value("${voyage.model:voyage-4-lite}") String model,
-                                 @Value("${voyage.min-request-interval:21s}") Duration minRequestInterval) {
+                                 @Value("${voyage.min-request-interval:21s}") Duration minRequestInterval,
+                                 @Value("${voyage.query-timeout:5s}") Duration queryTimeout) {
+        this(ENDPOINT, apiKey, model, minRequestInterval, queryTimeout);
+    }
+
+    VoyageEmbeddingClient(String endpoint, String apiKey, String model,
+                          Duration minRequestInterval, Duration queryTimeout) {
         this.model = model;
         this.minRequestIntervalMs = minRequestInterval.toMillis();
         this.http = RestClient.builder()
-                .baseUrl(ENDPOINT)
+                .baseUrl(endpoint)
                 .defaultHeader("Authorization", "Bearer " + apiKey)
+                .build();
+        SimpleClientHttpRequestFactory queryTimeouts = new SimpleClientHttpRequestFactory();
+        queryTimeouts.setConnectTimeout(queryTimeout);
+        queryTimeouts.setReadTimeout(queryTimeout);
+        this.queryHttp = RestClient.builder()
+                .baseUrl(endpoint)
+                .defaultHeader("Authorization", "Bearer " + apiKey)
+                .requestFactory(queryTimeouts)
                 .build();
     }
 
@@ -57,9 +79,17 @@ public class VoyageEmbeddingClient {
         return embed(texts, "document");
     }
 
-    /** Embeds a user question for retrieval. */
+    /**
+     * Embeds a user question for retrieval. Single attempt, short timeout, no throttle:
+     * throws on any failure so the caller can fall back immediately.
+     */
     public float[] embedQuery(String text) {
-        return embed(List.of(text), "query").get(0);
+        JsonNode response = queryHttp.post()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(requestBody(List.of(text), "query"))
+                .retrieve()
+                .body(JsonNode.class);
+        return parseEmbeddings(response, 1).get(0);
     }
 
     private List<float[]> embed(List<String> texts, String inputType) {
@@ -73,22 +103,26 @@ public class VoyageEmbeddingClient {
     }
 
     private List<float[]> embedBatch(List<String> batch, String inputType) {
-        Map<String, Object> body = Map.of(
+        return parseEmbeddings(postWithRetry(requestBody(batch, inputType)), batch.size());
+    }
+
+    private Map<String, Object> requestBody(List<String> batch, String inputType) {
+        return Map.of(
                 "input", batch,
                 "model", model,
                 "input_type", inputType,
                 "output_dimension", EMBEDDING_DIMENSION);
+    }
 
-        JsonNode response = postWithRetry(body);
-
+    private static List<float[]> parseEmbeddings(JsonNode response, int expected) {
         JsonNode data = response == null ? null : response.get("data");
-        if (data == null || !data.isArray() || data.size() != batch.size()) {
+        if (data == null || !data.isArray() || data.size() != expected) {
             throw new IllegalStateException("Voyage returned "
                     + (data == null ? "no data" : data.size() + " embeddings")
-                    + " for a batch of " + batch.size());
+                    + " for a batch of " + expected);
         }
 
-        float[][] ordered = new float[batch.size()][];
+        float[][] ordered = new float[expected][];
         for (JsonNode item : data) {
             int index = item.path("index").asInt();
             JsonNode embedding = item.get("embedding");
@@ -127,7 +161,7 @@ public class VoyageEmbeddingClient {
         }
     }
 
-    private void throttle() {
+    private synchronized void throttle() {
         long waitMs = minRequestIntervalMs - (System.currentTimeMillis() - lastRequestAt);
         if (waitMs > 0) {
             sleep(waitMs);

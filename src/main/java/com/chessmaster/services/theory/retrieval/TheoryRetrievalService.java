@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,9 +22,15 @@ import java.util.stream.Collectors;
  *
  * <p>Two steps: (1) deterministically match the move history against the
  * opening's variation tree, then (2) embed the question and take the nearest
- * {@code retrieval.top-k} chunks among opening-level content plus the matched
- * variation and its ancestors. Retrieval is best-effort: if the embedding call
- * fails the chat still works, just ungrounded.
+ * chunks, up to {@code retrieval.top-k} in total. Up to
+ * {@code retrieval.variation-slots} of those are reserved for chunks of the
+ * matched variation and its ancestors, because Voyage distances on this corpus
+ * are too uniform for the line's own text to reliably outrank generic
+ * opening-level text; the remaining slots go to the nearest opening-level
+ * chunks.
+ *
+ * <p>Retrieval is best-effort: any failure (database or embedding call) yields
+ * {@link RetrievedContext.Status#ERROR} so the chat still works, just ungrounded.
  */
 @Service
 public class TheoryRetrievalService {
@@ -34,59 +42,74 @@ public class TheoryRetrievalService {
     private final VoyageEmbeddingClient embeddings;
     private final JdbcTemplate jdbc;
     private final int topK;
+    private final int variationSlots;
 
     public TheoryRetrievalService(OpeningRepository openingRepository,
                                   OpeningVariationRepository variationRepository,
                                   VoyageEmbeddingClient embeddings,
                                   JdbcTemplate jdbc,
-                                  @Value("${retrieval.top-k:5}") int topK) {
+                                  @Value("${retrieval.top-k:5}") int topK,
+                                  @Value("${retrieval.variation-slots:3}") int variationSlots) {
         this.openingRepository = openingRepository;
         this.variationRepository = variationRepository;
         this.embeddings = embeddings;
         this.jdbc = jdbc;
         this.topK = topK;
+        this.variationSlots = Math.min(variationSlots, topK);
     }
 
     public RetrievedContext retrieve(String openingName, List<String> moveHistory, String question) {
         if (openingName == null || openingName.isBlank() || question == null || question.isBlank()) {
             return RetrievedContext.UNKNOWN_OPENING;
         }
-        Opening opening = openingRepository.findByName(openingName).orElse(null);
-        if (opening == null) {
-            return RetrievedContext.UNKNOWN_OPENING;
-        }
-
-        List<OpeningVariation> path = VariationMatcher.matchingPath(
-                variationRepository.findByOpeningId(opening.getId()), moveHistory);
-        String variationName = path.isEmpty() ? null : path.get(path.size() - 1).getName();
-
+        String resolvedName = null;
+        String variationName = null;
         try {
+            Opening opening = openingRepository.findByName(openingName).orElse(null);
+            if (opening == null) {
+                return RetrievedContext.UNKNOWN_OPENING;
+            }
+            resolvedName = opening.getName();
+
+            List<OpeningVariation> path = VariationMatcher.matchingPath(
+                    variationRepository.findByOpeningId(opening.getId()), moveHistory);
+            variationName = path.isEmpty() ? null : path.get(path.size() - 1).getName();
+
             List<RetrievedChunk> chunks = nearestChunks(opening.getId(), path, question);
-            return RetrievedContext.found(opening.getName(), variationName, chunks);
+            return RetrievedContext.found(resolvedName, variationName, chunks);
         } catch (RuntimeException e) {
             log.warn("Theory retrieval failed for \"{}\"; answering without context", openingName, e);
-            return RetrievedContext.error(opening.getName(), variationName);
+            return RetrievedContext.error(resolvedName, variationName);
         }
     }
 
     private List<RetrievedChunk> nearestChunks(long openingId, List<OpeningVariation> path, String question) {
         String vector = vectorLiteral(embeddings.embedQuery(question));
 
-        // Ids are numeric database keys, so inlining them is injection-safe.
-        String variationFilter = path.isEmpty() ? "" : " OR c.variation_id IN ("
-                + path.stream().map(v -> String.valueOf(v.getId())).collect(Collectors.joining(",")) + ")";
+        List<RetrievedChunk> chunks = new ArrayList<>();
+        if (!path.isEmpty() && variationSlots > 0) {
+            // Ids are numeric database keys, so inlining them is injection-safe.
+            String ids = path.stream().map(v -> String.valueOf(v.getId())).collect(Collectors.joining(","));
+            chunks.addAll(query("c.variation_id IN (" + ids + ")", vector, openingId, variationSlots));
+        }
+        chunks.addAll(query("c.variation_id IS NULL", vector, openingId, topK - chunks.size()));
 
+        chunks.sort(Comparator.comparingDouble(RetrievedChunk::distance));
+        return chunks;
+    }
+
+    private List<RetrievedChunk> query(String filter, String vector, long openingId, int limit) {
         return jdbc.query("""
-                        SELECT c.id, c.section, c.content, c.source,
+                        SELECT c.id, c.variation_id, c.section, c.content, c.source,
                                c.embedding <=> CAST(? AS vector) AS distance
                           FROM theory_chunks c
-                         WHERE c.opening_id = ?
-                           AND (c.variation_id IS NULL%s)
+                         WHERE c.opening_id = ? AND %s
                          ORDER BY distance
-                         LIMIT ?""".formatted(variationFilter),
-                (rs, i) -> new RetrievedChunk(rs.getLong("id"), rs.getString("section"),
-                        rs.getString("content"), rs.getString("source"), rs.getDouble("distance")),
-                vector, openingId, topK);
+                         LIMIT ?""".formatted(filter),
+                (rs, i) -> new RetrievedChunk(rs.getLong("id"), rs.getObject("variation_id", Long.class),
+                        rs.getString("section"), rs.getString("content"), rs.getString("source"),
+                        rs.getDouble("distance")),
+                vector, openingId, limit);
     }
 
     private static String vectorLiteral(float[] v) {

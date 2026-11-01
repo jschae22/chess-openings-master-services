@@ -57,6 +57,11 @@ class VariationMatcherTest {
     }
 
     @Test
+    void nullMoveInHistoryMatchesNothingInsteadOfThrowing() {
+        assertThat(VariationMatcher.matchingPath(ALL, java.util.Arrays.asList("e4", null, "Nf3"))).isEmpty();
+    }
+
+    @Test
     void emptyOrMissingHistoryMatchesNothing() {
         assertThat(VariationMatcher.matchingPath(ALL, List.of())).isEmpty();
         assertThat(VariationMatcher.matchingPath(ALL, null)).isEmpty();

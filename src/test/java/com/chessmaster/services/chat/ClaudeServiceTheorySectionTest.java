@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ClaudeServiceTheorySectionTest {
 
     private static final List<RetrievedChunk> CHUNKS =
-            List.of(new RetrievedChunk(1, "idea", "Najdorf idea text", "theory/s.yaml", 0.2));
+            List.of(new RetrievedChunk(1, 10L, "idea", "Najdorf idea text", "theory/s.yaml", 0.2));
 
     @Test
     void groundedIncludesNotesAndMatchedLine() {
@@ -27,6 +27,14 @@ class ClaudeServiceTheorySectionTest {
                 RetrievedContext.found("Sicilian Defense", null, CHUNKS));
 
         assertThat(section).contains("not in our notes").contains("Najdorf idea text");
+    }
+
+    @Test
+    void partialWithNoChunksIsTreatedAsNoNotes() {
+        String section = ClaudeService.theorySection(
+                RetrievedContext.found("Sicilian Defense", null, List.of()));
+
+        assertThat(section).contains("No theory notes are available").doesNotContain("---");
     }
 
     @Test

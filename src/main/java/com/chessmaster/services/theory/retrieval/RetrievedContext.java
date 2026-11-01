@@ -32,14 +32,16 @@ public record RetrievedContext(Status status, String openingName, String variati
     }
 
     /**
-     * Classifies a successful search: grounded when the played line matched a known
-     * variation and chunks came back; otherwise partial. Chunk distance is deliberately
+     * Classifies a successful search: grounded only when the played line matched a known
+     * variation <em>and</em> at least one returned chunk belongs to that line (or an
+     * ancestor); opening-level text alone is only partial grounding. Chunk distance is deliberately
      * not used: Voyage cosine distances for this corpus cluster at 0.8-1.0 for on-topic
      * and off-topic questions alike, so a threshold cannot tell them apart.
      */
     public static RetrievedContext found(String openingName, String variationName,
                                          List<RetrievedChunk> chunks) {
-        Status status = (variationName != null && !chunks.isEmpty()) ? Status.GROUNDED : Status.PARTIAL;
+        boolean hasLineContent = chunks.stream().anyMatch(c -> c.variationId() != null);
+        Status status = (variationName != null && hasLineContent) ? Status.GROUNDED : Status.PARTIAL;
         return new RetrievedContext(status, openingName, variationName, chunks);
     }
 
@@ -47,7 +49,11 @@ public record RetrievedContext(Status status, String openingName, String variati
         return chunks.isEmpty();
     }
 
-    /** @param distance pgvector cosine distance to the question (lower = closer) */
-    public record RetrievedChunk(long id, String section, String content, String source, double distance) {
+    /**
+     * @param variationId owning variation, or null for opening-level content
+     * @param distance    pgvector cosine distance to the question (lower = closer)
+     */
+    public record RetrievedChunk(long id, Long variationId, String section, String content,
+                                 String source, double distance) {
     }
 }

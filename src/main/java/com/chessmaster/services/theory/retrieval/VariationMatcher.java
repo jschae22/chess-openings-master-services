@@ -24,7 +24,10 @@ final class VariationMatcher {
         if (moveHistory == null || moveHistory.isEmpty()) {
             return List.of();
         }
-        List<String> played = moveHistory.stream().map(VariationMatcher::normalize).toList();
+        // Clients can send null/blank entries; they match nothing rather than failing the request.
+        List<String> played = moveHistory.stream()
+                .map(m -> m == null ? "" : normalize(m))
+                .toList();
         return variations.stream()
                 .filter(v -> isPrefix(v.getIdentifyingMoves(), played))
                 .sorted(Comparator.comparingInt(v -> v.getIdentifyingMoves().size()))

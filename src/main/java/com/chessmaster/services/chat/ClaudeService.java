@@ -29,6 +29,10 @@ public class ClaudeService {
 
     private static final long MAX_TOKENS = 1024L;
 
+    private static final String NO_NOTES_MESSAGE = "No theory notes are available for this question."
+            + " Answer from general knowledge, and tell the student you could not check it against"
+            + " our theory notes.\n";
+
     private final AnthropicClient client;
     private final String model;
     private final TheoryRetrievalService retrieval;
@@ -95,12 +99,15 @@ public class ClaudeService {
         String notes = context.chunks().stream()
                 .map(c -> "---\n" + c.content())
                 .collect(Collectors.joining("\n", "", "\n---\n"));
+        // Partial grounding with nothing retrieved is the same as having no notes.
+        if (context.chunks().isEmpty() && context.status() == RetrievedContext.Status.PARTIAL) {
+            return NO_NOTES_MESSAGE;
+        }
         return switch (context.status()) {
             case GROUNDED -> "Theory notes (matched line: %s):\n%s".formatted(context.variationName(), notes);
             case PARTIAL -> ("Theory notes (the student's exact line is not in our notes, so these are only"
                     + " loosely related; say if they don't answer the question):\n%s").formatted(notes);
-            case UNKNOWN_OPENING -> "No theory notes are available for this opening. Answer from general"
-                    + " knowledge, and tell the student you could not check it against our theory notes.\n";
+            case UNKNOWN_OPENING -> NO_NOTES_MESSAGE;
             case ERROR -> "Theory notes could not be loaded. Answer from general knowledge, and tell the"
                     + " student you could not check it against our theory notes.\n";
         };
