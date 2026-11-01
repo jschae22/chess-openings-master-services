@@ -132,7 +132,7 @@ CODEOWNERS enforcement and review per contributor.
 
 ---
 
-## 4. Continuous integration (Proposed)
+## 4. Continuous integration (Policy)
 
 CI runs on every push to a non-`main` branch and on every PR targeting `main`, so a feature branch gets
 feedback before a PR exists.
@@ -150,7 +150,7 @@ Rules:
 
 ---
 
-## 5. Continuous delivery (Proposed)
+## 5. Continuous delivery (Policy)
 
 - Every merge to `main` builds a Docker image tagged with the commit SHA and deploys it to Cloud Run.
 - **Staging vs prod (Policy):** `main` deploys straight to prod after CI passes. The `dev` → staging flow is
@@ -178,21 +178,21 @@ Rules:
 Applied to **both** repos, using a ruleset on `main`. Backend: applied 2026-10-20 as ruleset `main-protection`.
 Frontend: applied 2026-10-20, same ruleset name, required check `Lint, Test, Build`.
 
-- [ ] Require a pull request, with 0 required approvals
-- [ ] Require status checks (job names in §4) and require branches to be up to date
-- [ ] Require conversation resolution
-- [ ] Require linear history
-- [ ] Block force pushes and deletion
-- [ ] No bypass actors
-- [ ] Allow squash merge only
-- [ ] Automatically delete head branches
-- [ ] Secret scanning and push protection enabled
-- [ ] Dependabot security updates enabled
+- [x] Require a pull request, with 0 required approvals
+- [x] Require status checks (job names in §4) and require branches to be up to date
+- [x] Require conversation resolution
+- [x] Require linear history
+- [x] Block force pushes and deletion
+- [x] No bypass actors
+- [x] Allow squash merge only
+- [x] Automatically delete head branches
+- [x] Secret scanning and push protection enabled
+- [x] Dependabot security updates enabled
 
 Supporting files in each repo:
-- [ ] `.github/pull_request_template.md`
-- [ ] `.github/CODEOWNERS`
-- [ ] `.github/dependabot.yml` (maven or npm, plus github-actions)
+- [x] `.github/pull_request_template.md`
+- [x] `.github/CODEOWNERS`
+- [x] `.github/dependabot.yml` (maven or npm, plus github-actions)
 
 ---
 
@@ -211,6 +211,21 @@ gh pr create --base main --fill      # title: "feat: add opening search filter"
 gh pr merge --squash --delete-branch
 # → image built and deployed per §5
 ```
+
+---
+
+## 8. Dependency updates (Policy)
+
+Dependabot runs weekly (Mondays, time chosen by GitHub) in both repos and also re-scans whenever `dependabot.yml`
+changes. Security updates are separate: they arrive immediately, one PR each, outside the groups.
+
+- **Grouping:** GitHub Actions bumps arrive as one PR. Maven (backend) and npm (frontend) minor and patch bumps
+  arrive as one PR. Major bumps get their own PR.
+- **Reviewing:** CI must pass. An Actions bump is only really tested by the next prod deploy, so watch its smoke test.
+- **Major versions of frameworks** are migrations: do them on a `chore-upgrade-<name>` branch, not by merging the
+  Dependabot PR. The Spring Boot parent major bump is ignored in `dependabot.yml` for this reason.
+- A Dependabot PR that someone else edited (including "Update branch") cannot be rebased by Dependabot. Comment
+  `@dependabot recreate` instead.
 
 ---
 
@@ -235,4 +250,9 @@ one, or retire it, once the rollout completes.
 
 ## Open decisions
 
+- Spring Boot 4 migration (`chore-upgrade-spring-boot-4`), and the frontend vite 8, plugin-react 6 and motion 14
+  majors. Each is tracked as its own branch.
+- Frontend CD hardcodes `BACKEND_URL` to the prod backend, so a staging frontend deploy talks to the prod backend.
+  Pick the URL by ref, as the backend workflow does.
+- Add `docker` to `dependabot.yml` if the base images should be tracked.
 - Whether to add Spotless, JaCoCo and frontend ESLint/Prettier to the required checks, and when.
