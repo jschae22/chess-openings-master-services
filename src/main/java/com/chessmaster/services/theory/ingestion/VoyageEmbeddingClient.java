@@ -58,18 +58,20 @@ public class VoyageEmbeddingClient {
 
     VoyageEmbeddingClient(String endpoint, String apiKey, String model,
                           Duration minRequestInterval, Duration queryTimeout) {
+        // Secrets saved from a Windows shell can carry a trailing \r, which is an illegal header value.
+        String key = apiKey.trim();
         this.model = model;
         this.minRequestIntervalMs = minRequestInterval.toMillis();
         this.http = RestClient.builder()
                 .baseUrl(endpoint)
-                .defaultHeader("Authorization", "Bearer " + apiKey)
+                .defaultHeader("Authorization", "Bearer " + key)
                 .build();
         SimpleClientHttpRequestFactory queryTimeouts = new SimpleClientHttpRequestFactory();
         queryTimeouts.setConnectTimeout(queryTimeout);
         queryTimeouts.setReadTimeout(queryTimeout);
         this.queryHttp = RestClient.builder()
                 .baseUrl(endpoint)
-                .defaultHeader("Authorization", "Bearer " + apiKey)
+                .defaultHeader("Authorization", "Bearer " + key)
                 .requestFactory(queryTimeouts)
                 .build();
     }

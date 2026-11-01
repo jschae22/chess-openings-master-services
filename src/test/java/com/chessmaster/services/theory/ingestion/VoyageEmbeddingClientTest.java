@@ -89,6 +89,16 @@ class VoyageEmbeddingClientTest {
     }
 
     @Test
+    void apiKeyWithTrailingWhitespaceIsTrimmed() {
+        // A secret saved from a Windows shell ends in \r\n, which is an illegal header value.
+        VoyageEmbeddingClient client = new VoyageEmbeddingClient(
+                "http://127.0.0.1:" + server.getAddress().getPort() + "/v1/embeddings",
+                "key\r\n", "voyage-4-lite", Duration.ofSeconds(60), Duration.ofSeconds(5));
+
+        assertThat(client.embedQuery("q")).hasSize(VoyageEmbeddingClient.EMBEDDING_DIMENSION);
+    }
+
+    @Test
     void parsesTheEmbedding() {
         float[] vector = client(Duration.ofSeconds(5)).embedQuery("q");
 
