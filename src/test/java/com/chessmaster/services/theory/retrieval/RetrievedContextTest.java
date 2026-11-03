@@ -1,5 +1,6 @@
 package com.chessmaster.services.theory.retrieval;
 
+import com.chessmaster.services.opening.Opening;
 import com.chessmaster.services.theory.retrieval.RetrievedContext.RetrievedChunk;
 import com.chessmaster.services.theory.retrieval.RetrievedContext.Status;
 import org.junit.jupiter.api.Test;
@@ -17,26 +18,26 @@ class RetrievedContextTest {
 
     @Test
     void groundedWhenVariationMatchedAndALineChunkIsPresent() {
-        assertThat(RetrievedContext.found("Sicilian Defense", "Najdorf", List.of(OPENING_CHUNK, LINE_CHUNK)).status())
+        assertThat(RetrievedContext.found("Sicilian Defense", Opening.Side.BLACK, "Najdorf", List.of(OPENING_CHUNK, LINE_CHUNK)).status())
                 .isEqualTo(Status.GROUNDED);
     }
 
     @Test
     void partialWhenOnlyOpeningLevelChunksCameBack() {
         // The matched variation has no text of its own, so naming it as "the matched line" would overclaim.
-        assertThat(RetrievedContext.found("Sicilian Defense", "Najdorf", List.of(OPENING_CHUNK)).status())
+        assertThat(RetrievedContext.found("Sicilian Defense", Opening.Side.BLACK, "Najdorf", List.of(OPENING_CHUNK)).status())
                 .isEqualTo(Status.PARTIAL);
     }
 
     @Test
     void partialWhenNoVariationMatched() {
-        assertThat(RetrievedContext.found("Sicilian Defense", null, List.of(LINE_CHUNK)).status())
+        assertThat(RetrievedContext.found("Sicilian Defense", Opening.Side.BLACK, null, List.of(LINE_CHUNK)).status())
                 .isEqualTo(Status.PARTIAL);
     }
 
     @Test
     void partialWhenNothingFound() {
-        assertThat(RetrievedContext.found("Sicilian Defense", "Najdorf", List.of()).status())
+        assertThat(RetrievedContext.found("Sicilian Defense", Opening.Side.BLACK, "Najdorf", List.of()).status())
                 .isEqualTo(Status.PARTIAL);
     }
 }

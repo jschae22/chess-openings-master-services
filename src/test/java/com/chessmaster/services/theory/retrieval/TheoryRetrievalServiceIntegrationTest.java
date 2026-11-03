@@ -72,6 +72,7 @@ class TheoryRetrievalServiceIntegrationTest {
 
         assertThat(context.status()).isEqualTo(Status.GROUNDED);
         assertThat(context.variationName()).isEqualTo("Test Line");
+        assertThat(context.side()).isEqualTo(com.chessmaster.services.opening.Opening.Side.BLACK);
         assertThat(context.chunks()).hasSize(5);
         assertThat(context.chunks()).extracting(RetrievedChunk::section).contains("line_idea");
     }

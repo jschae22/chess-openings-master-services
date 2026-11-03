@@ -180,11 +180,15 @@ answers are grounded rather than free-associated.
       partial wording consistent, and tone down "Based on your theory notes" in the `PARTIAL`
       case (the notes are only loosely related there). Also stop the reply ending on a
       generic follow-up question when the student asked a direct one.
-      Both done together 2026-11-02: `ClaudeService` looks up the opening's side and adds it
-      to the user message; the system prompt now says "our theory notes" and to answer direct
-      questions without a generic follow-up; the `PARTIAL` notes block is toned down. Unit
-      tests and the full suite pass; the replies have not yet been re-checked against a live
-      Claude call.
+      Both done together 2026-11-02: retrieval now returns the opening's `side` on
+      `RetrievedContext` (no second lookup, and it survives a retrieval `ERROR`), and
+      `ClaudeService` puts it on its own line of the user message; the system prompt now says
+      "our theory notes" and to answer direct questions without a generic follow-up; the
+      `PARTIAL` notes block is toned down. Full suite passes. Checked live against Claude
+      (Sicilian as Black, London as White): advice came from the right side and used "our
+      theory notes". Open: replies still often end on a follow-up question for open-ended
+      questions, and the London `PARTIAL` reply got a bishop square wrong (general knowledge,
+      not the notes), so check whether the London corpus covers `1.d4 d5 2.Bf4 Nf6 3.e3`.
 - [ ] **Frontend (separate repo, new feature branch): show a notice from `grounding`.**
       `ChatResponse.grounding` is `GROUNDED | PARTIAL | UNKNOWN_OPENING | ERROR`. Show a
       subtle note for the non-`GROUNDED` values ("not checked against our theory notes" /

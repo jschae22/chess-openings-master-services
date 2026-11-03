@@ -7,7 +7,6 @@ import com.anthropic.models.messages.Message;
 import com.anthropic.models.messages.MessageCreateParams;
 import com.anthropic.models.messages.TextBlock;
 import com.chessmaster.services.opening.Opening;
-import com.chessmaster.services.opening.OpeningRepository;
 import com.chessmaster.services.theory.retrieval.RetrievedContext;
 import com.chessmaster.services.theory.retrieval.TheoryRetrievalService;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,41 +43,20 @@ public class ClaudeService {
     private final AnthropicClient client;
     private final String model;
     private final TheoryRetrievalService retrieval;
-    private final OpeningRepository openings;
 
     public ClaudeService(@Value("${claude.api-key}") String apiKey,
                           @Value("${claude.model:claude-haiku-4-5}") String model,
-                          TheoryRetrievalService retrieval,
-                          OpeningRepository openings) {
+                          TheoryRetrievalService retrieval) {
         this.client = AnthropicOkHttpClient.builder().apiKey(apiKey.trim()).build();
         this.model = model;
         this.retrieval = retrieval;
-        this.openings = openings;
     }
 
     public ChatResult chat(ChatRequest request) {
         RetrievedContext context = retrieval.retrieve(
                 request.openingName(), request.moveHistory(), request.userMessage());
 
-        String moves = (request.moveHistory() == null || request.moveHistory().isEmpty())
-                ? "No moves played yet"
-                : String.join(", ", request.moveHistory());
-
-        String userMessage = """
-                The student is studying: "%s". %s
-                Move history so far: %s.
-                Current board position (FEN): %s.
-
-                %s
-                Student's question: %s"""
-                .formatted(
-                        request.openingName() != null ? request.openingName() : "an unknown opening",
-                        sideLine(studentSide(request.openingName())),
-                        moves,
-                        request.currentFen() != null ? request.currentFen() : "unknown",
-                        theorySection(context),
-                        request.userMessage()
-                );
+        String userMessage = userMessage(request, context);
 
         MessageCreateParams params = MessageCreateParams.builder()
                 .model(model)
@@ -108,20 +86,36 @@ public class ClaudeService {
         return new ChatResult(reply, context.status());
     }
 
-    private Opening.Side studentSide(String openingName) {
-        if (openingName == null) {
-            return null;
-        }
-        return openings.findByName(openingName).map(Opening::getSide).orElse(null);
+    /** The per-request user message: opening, side, moves, FEN, theory notes, then the question. */
+    static String userMessage(ChatRequest request, RetrievedContext context) {
+        String moves = (request.moveHistory() == null || request.moveHistory().isEmpty())
+                ? "No moves played yet"
+                : String.join(", ", request.moveHistory());
+
+        return """
+                The student is studying: "%s".
+                %sMove history so far: %s.
+                Current board position (FEN): %s.
+
+                %s
+                Student's question: %s"""
+                .formatted(
+                        request.openingName() != null ? request.openingName() : "an unknown opening",
+                        sideLine(context.side()),
+                        moves,
+                        request.currentFen() != null ? request.currentFen() : "unknown",
+                        theorySection(context),
+                        request.userMessage()
+                );
     }
 
-    /** Tells the coach which colour the student plays; empty when the opening (and so the side) is unknown. */
+    /** Tells the coach which colour the student plays, as its own line; empty when the side is unknown. */
     static String sideLine(Opening.Side side) {
         if (side == null) {
             return "";
         }
         String colour = side == Opening.Side.WHITE ? "White" : "Black";
-        return "The student plays %s in this opening, so advise from %s's perspective.".formatted(colour, colour);
+        return "The student plays %s in this opening, so advise from %s's perspective.\n".formatted(colour, colour);
     }
 
     /** Context block for the user message; the wording depends on how well retrieval grounded it. */
