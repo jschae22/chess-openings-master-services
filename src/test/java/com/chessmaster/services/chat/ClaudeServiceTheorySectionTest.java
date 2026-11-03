@@ -1,5 +1,6 @@
 package com.chessmaster.services.chat;
 
+import com.chessmaster.services.opening.Opening;
 import com.chessmaster.services.theory.retrieval.RetrievedContext;
 import com.chessmaster.services.theory.retrieval.RetrievedContext.RetrievedChunk;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,14 @@ class ClaudeServiceTheorySectionTest {
         String section = ClaudeService.theorySection(
                 RetrievedContext.found("Sicilian Defense", null, CHUNKS));
 
-        assertThat(section).contains("not in our notes").contains("Najdorf idea text");
+        assertThat(section).contains("do not cover the student's exact line").contains("Najdorf idea text");
+    }
+
+    @Test
+    void sideLineNamesTheStudentsColour() {
+        assertThat(ClaudeService.sideLine(Opening.Side.BLACK)).contains("plays Black").contains("Black's perspective");
+        assertThat(ClaudeService.sideLine(Opening.Side.WHITE)).contains("plays White");
+        assertThat(ClaudeService.sideLine(null)).isEmpty();
     }
 
     @Test

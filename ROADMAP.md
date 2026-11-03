@@ -172,14 +172,19 @@ answers are grounded rather than free-associated.
 
 ### Next steps (follow-ups to Phase 2)
 
-- [ ] **Backend: pass the opening's `side` into the prompt.** The coach assumes the student
+- [x] **Backend: pass the opening's `side` into the prompt.** The coach assumes the student
       plays White (seen in the Najdorf and Sicilian answers). `Opening` already has `side`
       (WHITE/BLACK); include it in the user message so advice is from the right perspective.
-- [ ] **Backend: prompt wording.** Replies say "your notes" / "your theory notes" as if the
+- [x] **Backend: prompt wording.** Replies say "your notes" / "your theory notes" as if the
       student wrote them; the no-notes wording already says "our". Make the grounded and
       partial wording consistent, and tone down "Based on your theory notes" in the `PARTIAL`
       case (the notes are only loosely related there). Also stop the reply ending on a
       generic follow-up question when the student asked a direct one.
+      Both done together 2026-11-02: `ClaudeService` looks up the opening's side and adds it
+      to the user message; the system prompt now says "our theory notes" and to answer direct
+      questions without a generic follow-up; the `PARTIAL` notes block is toned down. Unit
+      tests and the full suite pass; the replies have not yet been re-checked against a live
+      Claude call.
 - [ ] **Frontend (separate repo, new feature branch): show a notice from `grounding`.**
       `ChatResponse.grounding` is `GROUNDED | PARTIAL | UNKNOWN_OPENING | ERROR`. Show a
       subtle note for the non-`GROUNDED` values ("not checked against our theory notes" /
