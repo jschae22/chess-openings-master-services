@@ -1,5 +1,7 @@
 package com.chessmaster.services.theory.retrieval;
 
+import com.chessmaster.services.opening.Opening;
+
 import java.util.List;
 
 /**
@@ -7,10 +9,11 @@ import java.util.List;
  *
  * @param status        how well the answer can be grounded in the corpus
  * @param openingName   canonical opening name, or null if the request's opening isn't in the corpus
+ * @param side          colour the student plays in this opening, or null if the opening is unknown
  * @param variationName most specific variation the move history is inside, or null if none matched
  * @param chunks        theory chunks ranked by relevance to the question (best first)
  */
-public record RetrievedContext(Status status, String openingName, String variationName,
+public record RetrievedContext(Status status, String openingName, Opening.Side side, String variationName,
                                List<RetrievedChunk> chunks) {
 
     public enum Status {
@@ -25,10 +28,10 @@ public record RetrievedContext(Status status, String openingName, String variati
     }
 
     public static final RetrievedContext UNKNOWN_OPENING =
-            new RetrievedContext(Status.UNKNOWN_OPENING, null, null, List.of());
+            new RetrievedContext(Status.UNKNOWN_OPENING, null, null, null, List.of());
 
-    public static RetrievedContext error(String openingName, String variationName) {
-        return new RetrievedContext(Status.ERROR, openingName, variationName, List.of());
+    public static RetrievedContext error(String openingName, Opening.Side side, String variationName) {
+        return new RetrievedContext(Status.ERROR, openingName, side, variationName, List.of());
     }
 
     /**
@@ -38,11 +41,11 @@ public record RetrievedContext(Status status, String openingName, String variati
      * not used: Voyage cosine distances for this corpus cluster at 0.8-1.0 for on-topic
      * and off-topic questions alike, so a threshold cannot tell them apart.
      */
-    public static RetrievedContext found(String openingName, String variationName,
+    public static RetrievedContext found(String openingName, Opening.Side side, String variationName,
                                          List<RetrievedChunk> chunks) {
         boolean hasLineContent = chunks.stream().anyMatch(c -> c.variationId() != null);
         Status status = (variationName != null && hasLineContent) ? Status.GROUNDED : Status.PARTIAL;
-        return new RetrievedContext(status, openingName, variationName, chunks);
+        return new RetrievedContext(status, openingName, side, variationName, chunks);
     }
 
     public boolean isEmpty() {

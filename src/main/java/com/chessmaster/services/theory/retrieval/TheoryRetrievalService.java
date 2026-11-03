@@ -63,6 +63,7 @@ public class TheoryRetrievalService {
             return RetrievedContext.UNKNOWN_OPENING;
         }
         String resolvedName = null;
+        Opening.Side side = null;
         String variationName = null;
         try {
             Opening opening = openingRepository.findByName(openingName).orElse(null);
@@ -70,16 +71,17 @@ public class TheoryRetrievalService {
                 return RetrievedContext.UNKNOWN_OPENING;
             }
             resolvedName = opening.getName();
+            side = opening.getSide();
 
             List<OpeningVariation> path = VariationMatcher.matchingPath(
                     variationRepository.findByOpeningId(opening.getId()), moveHistory);
             variationName = path.isEmpty() ? null : path.get(path.size() - 1).getName();
 
             List<RetrievedChunk> chunks = nearestChunks(opening.getId(), path, question);
-            return RetrievedContext.found(resolvedName, variationName, chunks);
+            return RetrievedContext.found(resolvedName, side, variationName, chunks);
         } catch (RuntimeException e) {
             log.warn("Theory retrieval failed for \"{}\"; answering without context", openingName, e);
-            return RetrievedContext.error(resolvedName, variationName);
+            return RetrievedContext.error(resolvedName, side, variationName);
         }
     }
 
